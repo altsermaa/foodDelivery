@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import mongoose, { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import cors from "cors";
+import jwt from "jsonwebtoken";
 
 const databaseConnect = async () => {
   try {
@@ -53,7 +54,7 @@ app.post("/signUp", async (request: Request, response: Response) => {
   if (!isEmailExisted) {
     const hashedPassword = await bcrypt.hashSync(password, 10);
     await UserModel.create({ email, password: hashedPassword });
-    response.send({message: "Successfully created new user"});
+    response.send({ message: "Successfully created new user" });
     return;
   }
 
@@ -74,10 +75,41 @@ app.post("/login", async (request: Request, response: Response) => {
     );
     if (hashedPassword) {
       response.send("Successfully logged in");
+      console.log(response.send);
       return;
     } else {
       response.send("Wrong password");
     }
+  }
+});
+
+app.get("/checkEmail", async (request: Request, response: Response) => {
+  const { email } = request.body;
+
+  const isEmailExisted = await UserModel.findOne({ email });
+  if (!isEmailExisted) {
+    response.send("User does not exist");
+    return;
+  } else {
+    response.send("User exists");
+    return;
+  }
+});
+
+app.put("/resetPassword", async (request: Request, response: Response) => {
+  const { email, password } = request.body;
+
+  const isEmailExisted = await UserModel.findOne({ email });
+  if (!isEmailExisted) {
+    response.send("User does not exist");
+    return;
+  } else {
+    const hashedPassword = await bcrypt.hashSync(password, 10);
+    await UserModel.updateOne(
+      { email },
+      { $set: { password: hashedPassword } }
+    );
+    response.send("Reset password successfully");
   }
 });
 
