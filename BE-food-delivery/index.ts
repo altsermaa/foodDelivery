@@ -73,13 +73,34 @@ app.post("/login", async (request: Request, response: Response) => {
       password,
       isEmailExisted.password!
     );
+
+    const tokenPassword = "foodDelivery";
     if (hashedPassword) {
-      response.send("Successfully logged in");
-      console.log(response.send);
+      const token = jwt.sign({ userId: isEmailExisted._id }, tokenPassword);
+      response.send({ message: "Successfully logged in", token: token });
       return;
     } else {
       response.send("Wrong password");
     }
+  }
+});
+
+app.post("/verify", async (request: Request, response: Response) => {
+  const token = request.body;
+  const tokenPassword = "foodDelivery";
+
+  try {
+    const isValid = jwt.verify(token, tokenPassword);
+    if (isValid) {
+      const destructedToken = jwt.decode(token);
+      response.send(destructedToken);
+      console.log(destructedToken);
+      return;
+    } else {
+      response.status(401).send({ message: "token is not valid" });
+    }
+  } catch (err) {
+    response.status(401).send({ message: "token is not valid" });
   }
 });
 
@@ -111,10 +132,6 @@ app.put("/resetPassword", async (request: Request, response: Response) => {
     );
     response.send("Reset password successfully");
   }
-});
-
-app.get("/", async (request: Request, response: Response) => {
-  response.send({ message: "Hello dear" });
 });
 
 app.listen(8000, () => {
