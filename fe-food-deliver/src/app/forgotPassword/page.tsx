@@ -1,12 +1,11 @@
 "use client";
 
-import { Step1 } from "./_components/Step1";
-import { RightSide } from "./_components/Right";
-import { Step2 } from "./_components/Step2";
 import { useState } from "react";
+import { RightSide } from "../signUp/_components/Right";
+import { ForgotPassLeft } from "./_components/forgotPassLeft";
+import { verifyEmail } from "./_components/verifyEmail";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { useRouter } from "next/navigation";
 import axios from "axios";
 
 const validationSchema = Yup.object({
@@ -20,14 +19,7 @@ const validationSchema = Yup.object({
         return emailRegex.test(value);
       }
     ),
-  password: Yup.string()
-    .required()
-    .min(6, "Password must be at least 6 characters"),
-  confirmPassword: Yup.string()
-    .required()
-    .oneOf([Yup.ref("password")], "Passwords must match"),
 });
-
 type FormikValues = {
   email: string;
   password: string;
@@ -57,30 +49,37 @@ export type InputPropsType = {
   handleSubmit: () => void;
 };
 
-const SignUpPage = () => {
-  const router = useRouter();
-
+const ForgotPasswordPage = () => {
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
-      confirmPassword: "",
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
-        const response = await axios.post("http://localhost:8000/signUp", {
+        const response = await axios.post("http://localhost:8000/checkEmail", {
           email: values.email,
-          password: values.password,
         });
-        router.push("/login");
+        if (response.data === "User does not exist") {
+          formik.errors.email === response.data;
+          return;
+        }
       } catch (err: any) {
         alert(err.response.data.message);
       }
     },
   });
+  const emailInputProps = {
+    value: formik.values.email,
+    onChange: formik.handleChange,
+    onBlur: formik.handleBlur,
+    touched: formik.touched,
+    errors: formik.errors,
+    handleSubmit: formik.handleSubmit,
+  };
 
-  const comp = [Step1, Step2];
+  const comp = [ForgotPassLeft, verifyEmail];
   const [index, setIndex] = useState<number>(0);
 
   const stepperNext = () => {
@@ -93,23 +92,9 @@ const SignUpPage = () => {
 
   const Stepper = comp[index];
 
-  const inputProps = {
-    values: formik.values,
-    onChange: formik.handleChange,
-    onBlur: formik.handleBlur,
-    touched: formik.touched,
-    errors: formik.errors,
-    stepperBack: stepperBack,
-    stepperNext: stepperNext,
-    handleSubmit: formik.handleSubmit,
-  };
-
   return (
     <div className="flex items-center justify-center h-screen p-5">
-      <div className="flex-1/5">
-        <Stepper {...inputProps} />
-      </div>
-
+      <div className="flex-1/5">{/* <Stepper {...emailInputProps} /> */}</div>
       <div className="flex-2/5 h-full">
         <RightSide />
       </div>
@@ -117,4 +102,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export default ForgotPasswordPage;
