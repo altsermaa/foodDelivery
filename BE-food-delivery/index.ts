@@ -86,7 +86,8 @@ app.post("/login", async (request: Request, response: Response) => {
 });
 
 app.post("/verify", async (request: Request, response: Response) => {
-  const token = request.body;
+  const { token } = request.body;
+
   const tokenPassword = "foodDelivery";
 
   try {
@@ -94,7 +95,6 @@ app.post("/verify", async (request: Request, response: Response) => {
     if (isValid) {
       const destructedToken = jwt.decode(token);
       response.send(destructedToken);
-      console.log(destructedToken);
       return;
     } else {
       response.status(401).send({ message: "token is not valid" });
