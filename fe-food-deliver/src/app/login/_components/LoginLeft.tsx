@@ -69,7 +69,6 @@ export const LoginLeft = () => {
         });
         localStorage.setItem("token", response.data.token);
         await tokenChecker(response.data.token);
-        console.log(response.data.token);
         router.push("/");
       } catch (err: any) {
         alert(err.response.data.message);

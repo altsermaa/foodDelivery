@@ -19,21 +19,19 @@ type AuthContextType = {
   tokenChecker: (token: string) => Promise<void>;
 };
 
-const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+export const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const router = useRouter();
 
   const [user, setUser] = useState<User>({ userId: null });
-  console.log(user);
 
   const tokenChecker = async (token: string) => {
     try {
-      const response = await axios.post("http://localhost/8000/verify", {
+      const response = await axios.post("http://localhost:8000/verify", {
         token,
       });
-      console.log(response.data.destructedToken.userId);
-      setUser({ userId: response.data.destructedToken.userId });
+      setUser({ userId: response.data.userId });
     } catch (error) {
       router.push("/login");
     }

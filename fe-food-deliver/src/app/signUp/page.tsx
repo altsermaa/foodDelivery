@@ -8,6 +8,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { useAuth } from "@/app/_component/UserProvider";
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -59,6 +60,7 @@ export type InputPropsType = {
 
 const SignUpPage = () => {
   const router = useRouter();
+  const { user, tokenChecker } = useAuth();
 
   const formik = useFormik({
     initialValues: {
@@ -103,6 +105,10 @@ const SignUpPage = () => {
     stepperNext: stepperNext,
     handleSubmit: formik.handleSubmit,
   };
+
+  if (user.userId) {
+    router.push("/");
+  }
 
   return (
     <div className="flex items-center justify-center h-screen p-5">
