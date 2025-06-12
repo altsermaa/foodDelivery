@@ -1,9 +1,13 @@
-import express, { Request, Response } from "express";
+import express, { Request, response, Response } from "express";
 import mongoose, { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import cors from "cors";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+
+const app = express();
+app.use(express.json());
+app.use(cors());
 
 const databaseConnect = async () => {
   try {
@@ -25,9 +29,7 @@ const Users = new Schema({
 
 const UserModel = model("Users", Users);
 
-const app = express();
-app.use(express.json());
-app.use(cors());
+
 
 databaseConnect();
 
@@ -105,32 +107,77 @@ app.post("/verify", async (request: Request, response: Response) => {
   }
 });
 
-app.post("/checkEmail", async (request: Request, response: Response) => {
-  const { email } = request.body;
+// app.post("/checkEmail", async (request: Request, response: Response) => {
+//   try{
+//       const { email } = request.body;
+// if (!email) {
+//   return res.status(400).send("Email is required");
+// }
 
-  const isEmailExisted = await UserModel.findOne({ email });
-  if (!isEmailExisted) {
-    response.send("User does not exist");
-    return;
-  } else {
-    response.send("User exists");
-    return;
+//   const isEmailExisted = await UserModel.findOne({ email });
+//   console.log(isEmailExisted)
+//   if (!isEmailExisted) {
+//     response.status(200).send("User does not exist");
+//     return;
+//   } else {
+//     response.status(200).send("User exists");
+//     return;
+//   }
+//   } catch(err) {
+//     console.log("server error", err)
+//     response.status(500).send("This is internal server error")
+//   }
+
+// });
+
+app.get("/email", async (request: Request, response: Response) => {
+  const transport = nodemailer.createTransport({
+    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465, 
+    secure: true, 
+    auth: {
+      user: "altsermaa@gmail.com", 
+      pass: "wexbhtfemzxqfwss"
+    }
+  }); 
+
+  function generateRandom4DigitNumber() {
+    return Math.floor(1000 + Math.random() * 9000);
   }
-});
+
+  let randomNumber = generateRandom4DigitNumber();
+
+  const options = {
+    from: "altsermaa@gmail.com", 
+    to: ["turuu_0116@yahoo.com", "alimaa720@yahoo.com"], 
+    subject: 'hello', 
+    text: `Your verification number is: ${randomNumber}`
+  }; 
+
+  try{
+    await transport.sendMail(options);
+    response.send("Email sent successfully")
+  } catch(err) {
+    console.error("Error sending email:", err);
+    response.status(500).send("Email failed");
+  }
+})
 
 app.put("/resetPassword", async (request: Request, response: Response) => {
   const { email, password } = request.body;
+console.log(email);
 
   const isEmailExisted = await UserModel.findOne({ email });
   if (!isEmailExisted) {
     response.send("User does not exist");
     return;
   } else {
-    const hashedPassword = await bcrypt.hashSync(password, 10);
-    await UserModel.updateOne(
-      { email },
-      { $set: { password: hashedPassword } }
-    );
+    // const hashedPassword = await bcrypt.hashSync(password, 10);
+    // await UserModel.updateOne(
+    //   { email },
+    //   { $set: { password: hashedPassword } }
+    // );
     response.send("Reset password successfully");
   }
 });

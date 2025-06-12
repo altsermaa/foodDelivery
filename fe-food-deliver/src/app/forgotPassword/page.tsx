@@ -72,7 +72,7 @@ const ForgotPasswordPage = () => {
   const Stepper = comp[index];
 
   const stepperNext = () => {
-    index !== 1 && setIndex((prev) => prev + 1);
+    index < 2 && setIndex((prev) => prev + 1);
   };
 
   const stepperBack = () => {

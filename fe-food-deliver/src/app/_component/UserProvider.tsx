@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     if (token) {
       tokenChecker(token);
     } else {
-      router.push("/login");
+      // router.push("/login");
     }
   }, []);
 
