@@ -3,6 +3,7 @@ import mongoose, { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import cors from "cors";
 import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
 
 const databaseConnect = async () => {
   try {
@@ -104,7 +105,7 @@ app.post("/verify", async (request: Request, response: Response) => {
   }
 });
 
-app.get("/checkEmail", async (request: Request, response: Response) => {
+app.post("/checkEmail", async (request: Request, response: Response) => {
   const { email } = request.body;
 
   const isEmailExisted = await UserModel.findOne({ email });

@@ -5,47 +5,8 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import axios from "axios";
 import Link from "next/link";
-
-const validationSchema = Yup.object({
-  email: Yup.string()
-    .required()
-    .test(
-      "email",
-      "Invalid email. Use a format like example@email.com",
-      (value) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(value);
-      }
-    ),
-});
-type FormikValues = {
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
-
-type Errors = {
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-};
-
-type TouchedType = {
-  email?: boolean;
-  password?: boolean;
-  confirmPassword?: boolean;
-};
-
-export type InputPropsType = {
-  values: FormikValues;
-  onChange: (_event: React.ChangeEvent<HTMLInputElement>) => void;
-  onBlur: (_event: React.FocusEvent<HTMLInputElement>) => void;
-  touched: TouchedType;
-  stepperBack: () => void;
-  stepperNext: () => void;
-  errors: Errors;
-  handleSubmit: () => void;
-};
+import { InputPropsType } from "../page";
+import { useState } from "react";
 
 export const ForgotPassLeft = ({
   errors,
@@ -65,6 +26,22 @@ export const ForgotPassLeft = ({
   };
 
   const isButtonDisabled = !errors.email && values.email;
+  const [error, setError] = useState<string>("");
+
+  const checkEmail = async () => {
+    console.log("hi");
+    const response = await axios.post("http://localhost:8000/checkEmail", {
+      email: values.email,
+    });
+
+    if (response.data === "User does not exist") {
+      // setError(response.data);
+      return;
+    } else {
+      console.log("hi");
+      stepperNext();
+    }
+  };
 
   return (
     <div className="flex-1/3 items-center">
@@ -83,15 +60,16 @@ export const ForgotPassLeft = ({
           </h3>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <form className="flex flex-col gap-6">
           <div>
             <Input {...emailInputProps} />
-            <div className="text-red-500">{touched.email && errors.email}</div>
+            <div className="text-red-500">{touched.email && error}</div>
           </div>
 
           <Button
             variant="secondary"
             type="submit"
+            onClick={checkEmail}
             disabled={!isButtonDisabled}
           >
             Send link

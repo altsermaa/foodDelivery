@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { useAuth } from "./_component/UserProvider";
 import { useRouter } from "next/navigation";
+import { FoodCart } from "./_component/FoodCart";
+import { PartAppetizer } from "./_component/PartAppetizer";
 
 export default function Home() {
   const { user } = useAuth();
@@ -14,8 +16,11 @@ export default function Home() {
 
   return (
     <div>
-      <div className="w-screen h-[668px] relative">
-        <Image src="/banner.png" fill objectFit="cover" alt="bannerImage" />
+      <div className="w-screen h-[570px] relative">
+        <Image src="/banner.png" fill objectFit="fill" alt="bannerImage" />
+      </div>
+      <div className="w-full p-22">
+        <PartAppetizer />
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { RightSide } from "../signUp/_components/Right";
 import { ForgotPassLeft } from "./_components/forgotPassLeft";
-import { verifyEmail } from "./_components/verifyEmail";
+import { VerifyEmail } from "./_components/verifyEmail";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import axios from "axios";
@@ -54,47 +54,47 @@ const ForgotPasswordPage = () => {
     initialValues: {
       email: "",
       password: "",
+      confirmPassword: "",
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
-        const response = await axios.post("http://localhost:8000/checkEmail", {
-          email: values.email,
-        });
-        if (response.data === "User does not exist") {
-          formik.errors.email === response.data;
-          return;
-        }
+       
       } catch (err: any) {
         alert(err.response.data.message);
       }
     },
   });
-  const emailInputProps = {
-    value: formik.values.email,
-    onChange: formik.handleChange,
-    onBlur: formik.handleBlur,
-    touched: formik.touched,
-    errors: formik.errors,
-    handleSubmit: formik.handleSubmit,
-  };
 
-  const comp = [ForgotPassLeft, verifyEmail];
+  const comp = [ForgotPassLeft, VerifyEmail];
   const [index, setIndex] = useState<number>(0);
+
+  const Stepper = comp[index];
 
   const stepperNext = () => {
     index !== 1 && setIndex((prev) => prev + 1);
   };
 
   const stepperBack = () => {
-    index !== 0 && setIndex((prev) => prev - 1);
+    setIndex((prev) => prev - 1);
   };
 
-  const Stepper = comp[index];
+  const emailInputProps = {
+    values: formik.values,
+    onChange: formik.handleChange,
+    onBlur: formik.handleBlur,
+    touched: formik.touched,
+    errors: formik.errors,
+    handleSubmit: formik.handleSubmit,
+    stepperBack: stepperBack,
+    stepperNext: stepperNext,
+  };
 
   return (
     <div className="flex items-center justify-center h-screen p-5">
-      <div className="flex-1/5">{/* <Stepper {...emailInputProps} /> */}</div>
+      <div className="flex-1/5">
+        <Stepper {...emailInputProps} />
+      </div>
       <div className="flex-2/5 h-full">
         <RightSide />
       </div>

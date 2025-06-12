@@ -2,7 +2,7 @@ import { ChevronLeftIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export const verifyEmail = () => {
+export const VerifyEmail = () => {
   return (
     <div className="flex-1/3 items-center">
       <div className="w-[416px] m-auto flex gap-6 flex-col">
