@@ -7,12 +7,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { InputPropsType } from "../page";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
-export const Step2 = ({
+export const ResetPassword = ({
   errors,
   values,
   touched,
-  stepperNext,
   onChange,
   onBlur,
   stepperBack,
@@ -35,10 +36,30 @@ export const Step2 = ({
   };
 
   const isButtonDisabled = !errors.password;
+  const router = useRouter();
 
   const [show, setShow] = useState(false);
   const handleVisibility = () => {
     setShow((prev) => !prev);
+  };
+
+  const ResetPassword = async () => {
+    try {
+      const response = await axios.post("http://localhost:8000/resetPassword", {
+        email: values.email,
+        password: values.password,
+      });
+      console.log(response);
+      if (response.data === "wrong code") {
+        // setError(response.data);
+        return;
+      } else {
+        router.push("/login");
+      }
+    } catch (err: any) {
+      console.log(err);
+      alert(err);
+    }
   };
 
   return (

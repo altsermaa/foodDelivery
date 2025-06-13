@@ -7,6 +7,7 @@ import { VerifyEmail } from "./_components/verifyEmail";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import axios from "axios";
+import { ResetPassword } from "./_components/ResetPassword";
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -59,14 +60,13 @@ const ForgotPasswordPage = () => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
-       
       } catch (err: any) {
         alert(err.response.data.message);
       }
     },
   });
 
-  const comp = [ForgotPassLeft, VerifyEmail];
+  const comp = [ForgotPassLeft, VerifyEmail, ResetPassword];
   const [index, setIndex] = useState<number>(0);
 
   const Stepper = comp[index];

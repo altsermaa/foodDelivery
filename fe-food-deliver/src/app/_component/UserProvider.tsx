@@ -19,7 +19,9 @@ type AuthContextType = {
   tokenChecker: (token: string) => Promise<void>;
 };
 
-export const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+export const AuthContext = createContext<AuthContextType>(
+  {} as AuthContextType
+);
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const router = useRouter();
@@ -33,7 +35,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       });
       setUser({ userId: response.data.userId });
     } catch (error) {
-      router.push("/login");
+      // router.push("/login");
     }
   };
 

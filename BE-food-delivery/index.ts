@@ -27,27 +27,16 @@ const Users = new Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
+const Otp = new Schema({
+  code: { type: String, require: true },
+  userID: { type: Schema.ObjectId, require: true, ref: "Users" },
+  createdAt: { type: Date, default: Date.now, expires: 10 },
+});
+
 const UserModel = model("Users", Users);
-
-
+const OtpModel = model("Otp", Otp);
 
 databaseConnect();
-
-app.post("/addUser", async (request: Request, response: Response) => {
-  const { email, password } = request.body;
-  const result = await UserModel.create({ email, password });
-
-  response.send(result);
-});
-
-app.put("/updateUser", async (request: Request, response: Response) => {
-  const user = await UserModel.findOneAndUpdate(
-    { email: "123@gmail.com" },
-    { password: "789" },
-    { new: true }
-  );
-  response.send(user);
-});
 
 app.post("/signUp", async (request: Request, response: Response) => {
   const { email, password } = request.body;
@@ -107,77 +96,87 @@ app.post("/verify", async (request: Request, response: Response) => {
   }
 });
 
-// app.post("/checkEmail", async (request: Request, response: Response) => {
-//   try{
-//       const { email } = request.body;
-// if (!email) {
-//   return res.status(400).send("Email is required");
-// }
+function generateRandom4DigitNumber() {
+  return Math.floor(1000 + Math.random() * 9000);
+}
 
-//   const isEmailExisted = await UserModel.findOne({ email });
-//   console.log(isEmailExisted)
-//   if (!isEmailExisted) {
-//     response.status(200).send("User does not exist");
-//     return;
-//   } else {
-//     response.status(200).send("User exists");
-//     return;
-//   }
-//   } catch(err) {
-//     console.log("server error", err)
-//     response.status(500).send("This is internal server error")
-//   }
-
-// });
-
-app.get("/email", async (request: Request, response: Response) => {
+const sendOTP = async (email: string) => {
   const transport = nodemailer.createTransport({
     service: "gmail",
     host: "smtp.gmail.com",
-    port: 465, 
-    secure: true, 
+    port: 465,
+    secure: true,
     auth: {
-      user: "altsermaa@gmail.com", 
-      pass: "wexbhtfemzxqfwss"
-    }
-  }); 
-
-  function generateRandom4DigitNumber() {
-    return Math.floor(1000 + Math.random() * 9000);
-  }
+      user: "altsermaa@gmail.com",
+      pass: "wexbhtfemzxqfwss",
+    },
+  });
 
   let randomNumber = generateRandom4DigitNumber();
 
   const options = {
-    from: "altsermaa@gmail.com", 
-    to: ["turuu_0116@yahoo.com", "alimaa720@yahoo.com"], 
-    subject: 'hello', 
-    text: `Your verification number is: ${randomNumber}`
-  }; 
+    from: "altsermaa@gmail.com",
+    to: [email],
+    subject: "hello",
+    text: `Your verification number is: ${randomNumber}`,
+  };
 
-  try{
-    await transport.sendMail(options);
-    response.send("Email sent successfully")
-  } catch(err) {
-    console.error("Error sending email:", err);
-    response.status(500).send("Email failed");
+  await transport.sendMail(options);
+  return randomNumber;
+};
+
+app.put("/checkEmail", async (request: Request, response: Response) => {
+  const { email } = request.body;
+  console.log(email);
+
+  try {
+    const isEmailExisted = await UserModel.findOne({ email });
+    if (!isEmailExisted) {
+      response.send("User does not exist");
+      return;
+    } else {
+      const otp = await sendOTP(email);
+      await OtpModel.create({ code: otp, userID: isEmailExisted._id });
+      response.send("success");
+    }
+  } catch (err) {
+    response.status(500).send(err);
+    console.log(err);
+    return;
   }
-})
+});
+
+app.post("/checkOtp", async (request: Request, response: Response) => {
+  const { email, code } = request.body;
+
+  try {
+    const isOtpExisting = await OtpModel.findOne({ code }).populate("userId");
+    console.log(isOtpExisting);
+
+    if (!isOtpExisting) {
+      response.status(400).send("wrong code");
+      return;
+    } else {
+      response.status(200).send({ message: "otp matched", isOtpExisting });
+    }
+  } catch (err) {
+    response.status(400).send("aldaa");
+  }
+});
 
 app.put("/resetPassword", async (request: Request, response: Response) => {
   const { email, password } = request.body;
-console.log(email);
 
   const isEmailExisted = await UserModel.findOne({ email });
   if (!isEmailExisted) {
     response.send("User does not exist");
     return;
   } else {
-    // const hashedPassword = await bcrypt.hashSync(password, 10);
-    // await UserModel.updateOne(
-    //   { email },
-    //   { $set: { password: hashedPassword } }
-    // );
+    const hashedPassword = await bcrypt.hashSync(password, 10);
+    await UserModel.updateOne(
+      { email },
+      { $set: { password: hashedPassword } }
+    );
     response.send("Reset password successfully");
   }
 });

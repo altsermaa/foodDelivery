@@ -29,12 +29,11 @@ export const ForgotPassLeft = ({
   const [error, setError] = useState<string>("");
 
   const checkEmail = async () => {
-    console.log("email", values.email)
     try {
-      const response = await axios.put("http://localhost:8000/resetPassword", {
+      const response = await axios.put("http://localhost:8000/checkEmail", {
         email: values.email,
       });
-      console.log(response)
+      console.log(response);
       if (response.data === "User does not exist") {
         setError(response.data);
         return;
@@ -42,8 +41,8 @@ export const ForgotPassLeft = ({
         stepperNext();
       }
     } catch (err: any) {
-      console.log(err)
-      alert(err)
+      console.log(err);
+      alert(err);
     }
   };
 

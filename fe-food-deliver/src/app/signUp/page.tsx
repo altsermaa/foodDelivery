@@ -75,6 +75,7 @@ const SignUpPage = () => {
           email: values.email,
           password: values.password,
         });
+        console.log(response);
         router.push("/login");
       } catch (err: any) {
         alert(err.response.data.message);

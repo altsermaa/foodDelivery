@@ -5,11 +5,33 @@ import { InputPropsType } from "../page";
 import {
   InputOTP,
   InputOTPGroup,
-  InputOTPSeparator,
   InputOTPSlot,
-} from "@/components/ui/input-otp"
+} from "@/components/ui/input-otp";
+import { useState } from "react";
+import axios from "axios";
 
-export const VerifyEmail = ({stepperBack}:InputPropsType) => {
+export const VerifyEmail = ({ stepperBack, stepperNext }: InputPropsType) => {
+  const [error, setError] = useState<string>("");
+  const [values, setValues] = useState<string>("");
+
+  const sendOtp = async (values: string) => {
+    try {
+      const response = await axios.post("http://localhost:8000/checkOtp", {
+        code: values,
+      });
+      console.log(response);
+      if (response.data === "wrong code") {
+        setError(response.data);
+        return;
+      } else {
+        stepperNext();
+      }
+    } catch (err: any) {
+      console.log(err);
+      alert(err);
+    }
+  };
+
   return (
     <div className="flex-1/3 items-center">
       <div className="w-[416px] m-auto flex gap-6 flex-col">
@@ -27,21 +49,28 @@ export const VerifyEmail = ({stepperBack}:InputPropsType) => {
             We just sent an email to Test@gmail.com. Click the link in the email
             to verify your account.
           </h3>
-          <InputOTP maxLength={6} className="flex justify-center">
+          <InputOTP
+            maxLength={4}
+            className="flex justify-center"
+            value={values}
+            onChange={(values) => setValues(values)}
+          >
             <InputOTPGroup>
               <InputOTPSlot index={0} />
               <InputOTPSlot index={1} />
-              <InputOTPSlot index={2} />  
+              <InputOTPSlot index={2} />
               <InputOTPSlot index={3} />
             </InputOTPGroup>
           </InputOTP>
+          <div className="text-red-500">{error}</div>
           <div className="flex gap-5">
-            <Button className="bg-lime-500">Confirm OTP</Button>
+            <Button className="bg-lime-500" onClick={() => sendOtp(values)}>
+              Confirm OTP
+            </Button>
             <Button>Resend email</Button>
           </div>
         </div>
       </div>
     </div>
-    // </div>
   );
 };
