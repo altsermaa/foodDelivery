@@ -29,7 +29,7 @@ const Users = new Schema({
 
 const Otp = new Schema({
   code: { type: String, require: true },
-  userID: { type: Schema.ObjectId, require: true, ref: "Users" },
+  userId: { type: Schema.ObjectId, require: true, ref: "Users" },
   createdAt: { type: Date, default: Date.now, expires: 10 },
 });
 
@@ -150,8 +150,8 @@ app.post("/checkOtp", async (request: Request, response: Response) => {
   const { email, code } = request.body;
 
   try {
-    const isOtpExisting = await OtpModel.findOne({ code }).populate("userId");
-    console.log(isOtpExisting);
+    const isOtpExisting = await OtpModel.findOne({ code }).populate("userId")
+    console.log("this is checking if otp exists",isOtpExisting);
 
     if (!isOtpExisting) {
       response.status(400).send("wrong code");
@@ -165,20 +165,22 @@ app.post("/checkOtp", async (request: Request, response: Response) => {
 });
 
 app.put("/resetPassword", async (request: Request, response: Response) => {
-  const { email, password } = request.body;
+  try{
+      const { email, password } = request.body;
 
   const isEmailExisted = await UserModel.findOne({ email });
-  if (!isEmailExisted) {
-    response.send("User does not exist");
-    return;
-  } else {
+  if (isEmailExisted) {
     const hashedPassword = await bcrypt.hashSync(password, 10);
     await UserModel.updateOne(
       { email },
       { $set: { password: hashedPassword } }
     );
-    response.send("Reset password successfully");
+    response.status(200).send("Reset password successfully");
   }
+  } catch(err) {
+    response.status(400).send({message:"aldaa", err})
+  }
+
 });
 
 app.listen(8000, () => {

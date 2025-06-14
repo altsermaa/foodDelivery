@@ -43,18 +43,18 @@ export const ResetPassword = ({
     setShow((prev) => !prev);
   };
 
-  const ResetPassword = async () => {
+  const resetPassword = async () => {
     try {
       const response = await axios.post("http://localhost:8000/resetPassword", {
         email: values.email,
         password: values.password,
       });
       console.log(response);
-      if (response.data === "wrong code") {
-        // setError(response.data);
+      if (response.data === "Reset password successfully") {
+        router.push("/login");
         return;
       } else {
-        router.push("/login");
+        console.log(response.data)
       }
     } catch (err: any) {
       console.log(err);
@@ -80,7 +80,7 @@ export const ResetPassword = ({
           </h3>
         </div>
 
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        <form className="flex flex-col gap-4" onSubmit={resetPassword}>
           <Input
             {...passwordInputProps}
             type={`${show ? "text" : "password"}`}
