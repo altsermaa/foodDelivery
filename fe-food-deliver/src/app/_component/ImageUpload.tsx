@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { useState } from "react";
 
@@ -27,7 +29,6 @@ export const ImageUpload = () => {
       const result = await response.json();
       alert("success");
       setImageUrl(result.secure_url);
-      return result.secure.url;
     } catch (err: unknown) {
       console.log(err);
       alert("failed to upload image");
@@ -43,7 +44,7 @@ export const ImageUpload = () => {
     <div>
       <input type="file" onChange={fileHandler} />
       <button onClick={upload}>Upload</button>
-      {imageUrl && <Image src="" alt="image" width={400} height={400} />}
+      {imageUrl && <Image src={imageUrl} alt="image" width={400} height={400} />}
     </div>
   );
 };
