@@ -19,22 +19,77 @@ const databaseConnect = async () => {
   }
 };
 
-const Users = new Schema({
-  email: { type: String, require: true },
-  password: { type: String, require: true },
+enum UserRoleEnum {
+  USER,
+  ADMIN,
+}
 
+const Users = new Schema({
+  email: { type: String, required: true },
+  password: { type: String, required: true },
+  phoneNumber: { type: Number, required: true },
+  address: { type: String, required: true },
+  role: { type: String, enum: ["USER", "ADMIN"], required: true },
+  // orderedFoods: [{ type: Schema.ObjectId, required: true, ref: "Foods" }],
+  isVerified: { type: Boolean, required: true },
   createdAt: { type: Date, default: Date.now, immutable: true },
   updatedAt: { type: Date, default: Date.now },
 });
 
+const FoodOrderItem = new Schema(
+  {
+    food: [{ type: Schema.ObjectId, required: true, ref: "Foods" }],
+    quantity: { type: Number, required: true },
+  },
+  { _id: false }
+);
+
+enum FoodOrderEnum {
+  PENDING,
+  CANCELLED,
+  DELIVERED,
+}
+
+const FoodOrder = new Schema({
+  user: { type: Schema.ObjectId, required: true, ref: "Users" },
+  totalPrice: { type: Number, required: true },
+  foodOrderItems: [{ type: [FoodOrderItem], required: true }],
+  status: {
+    type: String,
+    enum: ["PENDING", "CANCELLED", "DELIVERED"],
+    required: true,
+  },
+  createdAt: { type: Date, default: Date.now, immutable: true },
+  updatedAt: { type: Date, default: Date.now },
+});
+
+const Foods = new Schema({
+  foodName: { type: String, required: true },
+  price: { type: Number, required: true },
+  image: { type: String, required: true },
+  ingredients: { type: String, required: true },
+  categoryName: { type: Schema.ObjectId, required: true, ref: "FoodCategory" },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+});
+
+const FoodCategory = new Schema({
+  categoryName: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+});
+
 const Otp = new Schema({
-  code: { type: String, require: true },
-  userId: { type: Schema.ObjectId, require: true, ref: "Users" },
+  code: { type: String, required: true },
+  userId: { type: Schema.ObjectId, required: true, ref: "Users" },
   createdAt: { type: Date, default: Date.now, expires: 10 },
 });
 
 const UserModel = model("Users", Users);
 const OtpModel = model("Otp", Otp);
+const FoodCategoryModel = model("FoodCategory", FoodCategory);
+const FoodsModel = model("Foods", Foods);
+const FoodOrderModel = model("FoodOrder", FoodOrder);
 
 databaseConnect();
 
@@ -150,8 +205,8 @@ app.post("/checkOtp", async (request: Request, response: Response) => {
   const { email, code } = request.body;
 
   try {
-    const isOtpExisting = await OtpModel.findOne({ code }).populate("userId")
-    console.log("this is checking if otp exists",isOtpExisting);
+    const isOtpExisting = await OtpModel.findOne({ code }).populate("userId");
+    console.log("this is checking if otp exists", isOtpExisting);
 
     if (!isOtpExisting) {
       response.status(400).send("wrong code");
@@ -165,22 +220,71 @@ app.post("/checkOtp", async (request: Request, response: Response) => {
 });
 
 app.put("/resetPassword", async (request: Request, response: Response) => {
-  try{
-      const { email, password } = request.body;
+  try {
+    const { email, password } = request.body;
 
-  const isEmailExisted = await UserModel.findOne({ email });
-  if (isEmailExisted) {
-    const hashedPassword = await bcrypt.hashSync(password, 10);
-    await UserModel.updateOne(
-      { email },
-      { $set: { password: hashedPassword } }
-    );
-    response.status(200).send("Reset password successfully");
-  }
-  } catch(err) {
-    response.status(400).send({message:"aldaa", err})
-  }
+    const isEmailExisted = await UserModel.findOne({ email });
+    if (isEmailExisted) {
+      const hashedPassword = await bcrypt.hashSync(password, 10);
 
+      await UserModel.findOneAndUpdate({ email }, { password: hashedPassword });
+      response.status(200).send("Reset password successfully");
+      console.log(response);
+    }
+  } catch (err) {
+    response.status(400).send({ message: "aldaa", err });
+  }
+});
+
+app.post("/createFood", async (request: Request, response: Response) => {
+  const { foodName, price, image, ingredients, categoryName } = request.body;
+
+  try {
+    const isFoodExisted = await FoodsModel.findOne({ foodName });
+    const isCategoryExisted = await FoodCategoryModel.findOne({ categoryName });
+
+    if (!isFoodExisted && isCategoryExisted) {
+      await FoodsModel.create({
+        foodName,
+        price,
+        image,
+        ingredients,
+        categoryName: isCategoryExisted?._id,
+      });
+      response.send({ message: "Successfully created new food" });
+      return;
+    }
+
+    response.status(400).send({ message: "This food already exists" });
+  } catch (err) {
+    response.send(err);
+  }
+});
+
+app.post("/createCategory", async (request: Request, response: Response) => {
+  const { categoryName } = request.body;
+  try {
+    const isCategoryExisted = await FoodCategoryModel.findOne({ categoryName });
+
+    if (!isCategoryExisted) {
+      await FoodCategoryModel.create({ categoryName });
+      response.send({ message: "Successfully created category" });
+      return;
+    }
+    response.status(400).send({ message: "This category already exists" });
+  } catch (err) {
+    response.send(err);
+  }
+});
+
+app.get("/readyFoods", async (request: Request, response: Response) => {
+  try {
+    const readyFoods = await FoodsModel.find({});
+    response.send(readyFoods);
+    console.log(readyFoods);
+  } catch (err) {
+    response.send(err);
+  }
 });
 
 app.listen(8000, () => {

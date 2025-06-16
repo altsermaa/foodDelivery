@@ -35,7 +35,8 @@ export const ResetPassword = ({
     onBlur: onBlur,
   };
 
-  const isButtonDisabled = !errors.password;
+  // const isButtonDisabled = !errors.password;
+  const isButtonDisabled = !!errors.password || !!errors.confirmPassword;
   const router = useRouter();
 
   const [show, setShow] = useState(false);
@@ -43,18 +44,19 @@ export const ResetPassword = ({
     setShow((prev) => !prev);
   };
 
-  const resetPassword = async () => {
+  const resetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/resetPassword", {
+      const response = await axios.put("http://localhost:8000/resetPassword", {
         email: values.email,
         password: values.password,
       });
-      console.log(response);
+
       if (response.data === "Reset password successfully") {
         router.push("/login");
         return;
       } else {
-        console.log(response.data)
+        console.log(response.data);
       }
     } catch (err: any) {
       console.log(err);
@@ -106,11 +108,7 @@ export const ResetPassword = ({
             <Label htmlFor="toggle">Show password</Label>
           </div>
 
-          <Button
-            type="submit"
-            variant="secondary"
-            disabled={!isButtonDisabled}
-          >
+          <Button type="submit" variant="secondary" disabled={isButtonDisabled}>
             Let's go
           </Button>
         </form>
