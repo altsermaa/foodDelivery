@@ -8,6 +8,7 @@ import { UserModel } from "./model/user.model";
 import { FoodsModel } from "./model/food.model";
 import { FoodCategoryModel } from "./model/foodCategory.model";
 import { OtpModel } from "./model/otp.model";
+import { UserRouter } from "./router/user-router";
 
 const app = express();
 app.use(express.json());
@@ -25,44 +26,9 @@ const databaseConnect = async () => {
 
 databaseConnect();
 
-app.post("/signUp", async (request: Request, response: Response) => {
-  const { email, password } = request.body;
+app.use(UserRouter); 
 
-  const isEmailExisted = await UserModel.findOne({ email });
 
-  if (!isEmailExisted) {
-    const hashedPassword = await bcrypt.hashSync(password, 10);
-    await UserModel.create({ email, password: hashedPassword });
-    response.send({ message: "Successfully created new user" });
-    return;
-  }
-
-  response.status(400).send({ message: "User already exists" });
-});
-
-app.post("/login", async (request: Request, response: Response) => {
-  const { email, password } = request.body;
-
-  const isEmailExisted = await UserModel.findOne({ email });
-  if (!isEmailExisted) {
-    response.send("User does not exist");
-    return;
-  } else {
-    const hashedPassword = await bcrypt.compareSync(
-      password,
-      isEmailExisted.password!
-    );
-
-    const tokenPassword = "foodDelivery";
-    if (hashedPassword) {
-      const token = jwt.sign({ userId: isEmailExisted._id }, tokenPassword);
-      response.send({ message: "Successfully logged in", token: token });
-      return;
-    } else {
-      response.send("Wrong password");
-    }
-  }
-});
 
 app.post("/verify", async (request: Request, response: Response) => {
   const { token } = request.body;
