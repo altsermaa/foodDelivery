@@ -35,7 +35,6 @@ export const ResetPassword = ({
     onBlur: onBlur,
   };
 
-  // const isButtonDisabled = !errors.password;
   const isButtonDisabled = !!errors.password || !!errors.confirmPassword;
   const router = useRouter();
 

@@ -4,6 +4,10 @@ import bcrypt from "bcrypt";
 import cors from "cors";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+import { UserModel } from "./model/user.model";
+import { FoodsModel } from "./model/food.model";
+import { FoodCategoryModel } from "./model/foodCategory.model";
+import { OtpModel } from "./model/otp.model";
 
 const app = express();
 app.use(express.json());
@@ -18,78 +22,6 @@ const databaseConnect = async () => {
     console.log(error);
   }
 };
-
-enum UserRoleEnum {
-  USER,
-  ADMIN,
-}
-
-const Users = new Schema({
-  email: { type: String, required: true },
-  password: { type: String, required: true },
-  phoneNumber: { type: Number, required: true },
-  address: { type: String, required: true },
-  role: { type: String, enum: ["USER", "ADMIN"], required: true },
-  // orderedFoods: [{ type: Schema.ObjectId, required: true, ref: "Foods" }],
-  isVerified: { type: Boolean, required: true },
-  createdAt: { type: Date, default: Date.now, immutable: true },
-  updatedAt: { type: Date, default: Date.now },
-});
-
-const FoodOrderItem = new Schema(
-  {
-    food: [{ type: Schema.ObjectId, required: true, ref: "Foods" }],
-    quantity: { type: Number, required: true },
-  },
-  { _id: false }
-);
-
-enum FoodOrderEnum {
-  PENDING,
-  CANCELLED,
-  DELIVERED,
-}
-
-const FoodOrder = new Schema({
-  user: { type: Schema.ObjectId, required: true, ref: "Users" },
-  totalPrice: { type: Number, required: true },
-  foodOrderItems: [{ type: [FoodOrderItem], required: true }],
-  status: {
-    type: String,
-    enum: ["PENDING", "CANCELLED", "DELIVERED"],
-    required: true,
-  },
-  createdAt: { type: Date, default: Date.now, immutable: true },
-  updatedAt: { type: Date, default: Date.now },
-});
-
-const Foods = new Schema({
-  foodName: { type: String, required: true },
-  price: { type: Number, required: true },
-  image: { type: String, required: true },
-  ingredients: { type: String, required: true },
-  categoryName: { type: Schema.ObjectId, required: true, ref: "FoodCategory" },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-});
-
-const FoodCategory = new Schema({
-  categoryName: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-});
-
-const Otp = new Schema({
-  code: { type: String, required: true },
-  userId: { type: Schema.ObjectId, required: true, ref: "Users" },
-  createdAt: { type: Date, default: Date.now, expires: 10 },
-});
-
-const UserModel = model("Users", Users);
-const OtpModel = model("Otp", Otp);
-const FoodCategoryModel = model("FoodCategory", FoodCategory);
-const FoodsModel = model("Foods", Foods);
-const FoodOrderModel = model("FoodOrder", FoodOrder);
 
 databaseConnect();
 

@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useAuth } from "./_component/UserProvider";
 import { useRouter } from "next/navigation";
-import { FoodCart } from "./_component/FoodCart";
 import { PartAppetizer } from "./_component/PartAppetizer";
 import { ImageUpload } from "./_component/ImageUpload";
 

@@ -6,8 +6,8 @@ export const PartAppetizer = () => {
     <div>
       <h1 className="mb-14 text-3xl text-white font-black">Appetizer</h1>
       <div className="grid grid-cols-3 gap-6">
-        {arr.map((el) => (
-          <FoodCart />
+        {arr.map((el, id) => (
+          <FoodCart key={id} />
         ))}
       </div>
     </div>
