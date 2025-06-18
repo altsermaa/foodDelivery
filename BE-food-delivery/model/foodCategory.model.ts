@@ -6,4 +6,6 @@ const FoodCategory = new Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-export const FoodCategoryModel = model("FoodCategory", FoodCategory);
+FoodCategory.index({ categoryName: 1 }, { unique: true });
+
+export const FoodCategoryModel = model("FoodCategories", FoodCategory);

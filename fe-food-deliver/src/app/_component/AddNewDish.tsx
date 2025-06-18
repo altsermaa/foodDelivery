@@ -10,12 +10,35 @@
 // import { Input } from "@/components/ui/input";
 // import { Label } from "@/components/ui/label";
 // import axios from "axios";
+// import { useState } from "react";
+
+// export type NewDish = {
+//   foodName: string;
+//   price: number | undefined;
+//   ingredients: string;
+// };
 
 // export const AddNewDish = () => {
-//   const addNewDish = async (values) => {
+//   const [foodName, setFoodName] = useState("");
+//   const handleFoodName = (event: React.ChangeEvent<HTMLInputElement>) => {
+//     setFoodName(event.target.value);
+//   };
+
+//   const [price, setPrice] = useState<number | undefined>(undefined);
+//   const handleFoodPrice = (event: React.ChangeEvent<HTMLInputElement>) => {
+//     setPrice(Number(event.target.value));
+//   };
+
+//   const [ingredients, setIngredients] = useState("");
+//   const handleIngredients = (event: React.ChangeEvent<HTMLInputElement>) => {
+//     setIngredients(event.target.value);
+//   };
+
+//   const addNewDish = async ({ foodName, price }: NewDish) => {
 //     try {
 //       const response = await axios.post("http://localhost:8000/createFood", {
-//         foodName: values.foodName,
+//         foodName: foodName,
+//         price: price,
 //       });
 //     } catch (err: any) {
 //       alert(err.response.data.message);
@@ -39,8 +62,8 @@
 //                 id="foodName"
 //                 name="foodName"
 //                 defaultValue="Type food name"
-//                 value={values}
-//                 onChange={onChange}
+//                 value={foodName}
+//                 onChange={handleFoodName}
 //               />
 //             </div>
 //             <div className="grid gap-3">
@@ -49,6 +72,9 @@
 //                 id="foodPrice"
 //                 name="foodPrice"
 //                 defaultValue="Enter price"
+//                 type="number"
+//                 value={price}
+//                 onChange={handleFoodPrice}
 //               />
 //             </div>
 //           </div>
@@ -59,6 +85,8 @@
 //                 id="ingredients"
 //                 name="ingredients"
 //                 defaultValue="List ingredients"
+//                 value={ingredients}
+//                 onChange={handleIngredients}
 //               />
 //             </div>
 //             <div className="grid gap-3">

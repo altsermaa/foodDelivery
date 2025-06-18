@@ -15,7 +15,7 @@ export default function Home() {
   }
 
   return (
-    <div>
+    <div className="bg-[#404040]">
       <div className="w-screen h-[570px] relative">
         <Image src="/banner.png" fill objectFit="fill" alt="bannerImage" />
       </div>

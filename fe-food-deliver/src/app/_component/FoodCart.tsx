@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import Image from "next/image";
+import { FoodType } from "./PartAppetizer";
 
-export const FoodCart = () => {
+export const FoodCart = ({ foodName }: FoodType) => {
   return (
     <Card className="h-[342px] w-full p-4 gap-5">
       <CardDescription className="h-full w-full relative">
@@ -25,7 +26,7 @@ export const FoodCart = () => {
       </CardDescription>
       <CardContent className="flex flex-col gap-2">
         <div className="flex justify-between">
-          <CardTitle className="text-[#FD543F]">Sunshine Stackers</CardTitle>
+          <CardTitle className="text-[#FD543F]">{foodName}</CardTitle>
           <CardTitle>$12.99</CardTitle>
         </div>
         <CardFooter className="flex-col gap-2 text-sm">

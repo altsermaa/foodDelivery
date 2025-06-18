@@ -25,4 +25,6 @@ const Users = new Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
+Users.index({ email: 1 }, { unique: true });
+
 export const UserModel = model("Users", Users);
