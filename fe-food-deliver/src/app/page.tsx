@@ -1,18 +1,10 @@
-"use client";
-
 import Image from "next/image";
-import { useAuth } from "./_component/UserProvider";
-import { useRouter } from "next/navigation";
 import { PartAppetizer } from "./_component/PartAppetizer";
 import { ImageUpload } from "./_component/ImageUpload";
+import axios from "axios";
 
-export default function Home() {
-  const { user } = useAuth();
-  const router = useRouter();
-
-  if (!user?.userId) {
-    router.push("/login");
-  }
+export default async function Home() {
+  const { data } = await axios.get("http://localhost:8000/readyFoods");
 
   return (
     <div className="bg-[#404040]">
@@ -20,7 +12,7 @@ export default function Home() {
         <Image src="/banner.png" fill objectFit="fill" alt="bannerImage" />
       </div>
       <div className="w-full p-22">
-        <PartAppetizer />
+        <PartAppetizer foods={data.foods} />
       </div>
       <ImageUpload />
     </div>

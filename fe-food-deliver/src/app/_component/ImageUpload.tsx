@@ -5,7 +5,9 @@ import { useState } from "react";
 
 export const ImageUpload = () => {
   const [file, setFile] = useState<File | null>(null);
+  console.log(file);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  console.log(imageUrl);
 
   const upload = async () => {
     if (!file) {
@@ -28,6 +30,7 @@ export const ImageUpload = () => {
 
       const result = await response.json();
       alert("success");
+      console.log(result.secure_url);
       setImageUrl(result.secure_url);
     } catch (err: unknown) {
       console.log(err);
@@ -44,7 +47,9 @@ export const ImageUpload = () => {
     <div>
       <input type="file" onChange={fileHandler} />
       <button onClick={upload}>Upload</button>
-      {imageUrl && <Image src={imageUrl} alt="image" width={400} height={400} />}
+      {imageUrl && (
+        <Image src={imageUrl} alt="image" width={400} height={400} />
+      )}
     </div>
   );
 };

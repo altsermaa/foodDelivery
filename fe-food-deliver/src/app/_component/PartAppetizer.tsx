@@ -1,37 +1,44 @@
-import axios from "axios";
 import { FoodCart } from "./FoodCart";
-import { useEffect, useState } from "react";
 
-export type FoodType = {
+export type FoodProps = {
   _id: string;
   foodName: string;
   price: number;
   image: string;
-  ingredients: string;
 };
 
-export const PartAppetizer = () => {
-  const arr = [1, 2, 3, 4, 5, 6];
-  const [foods, setFoods] = useState<FoodType[]>([]);
+type PropsType = {
+  foods: Record<string, FoodProps[]>;
+};
 
-  useEffect(() => {
-    const response = async () => {
-      const result = await axios.get("http://localhost:8000/readyFoods");
-      setFoods(result.data.foods.hool);
-    };
-    response();
-  }, []);
+export const PartAppetizer = ({ foods }: PropsType) => {
+  const keys = Object.keys(foods);
 
-  console.log("hi", foods);
   return (
     <div>
-      <h1 className="mb-14 text-3xl text-white font-black">Appetizer</h1>
-      <div className="grid grid-cols-3 gap-6">
-        {foods.map((el, id) => (
-          <FoodCart key={el.id} foodName={el.foodName} />
-        ))}
+      <div className="flex flex-col gap-20">
+        {keys.map((el, index) => {
+          return (
+            <div key={index}>
+              <h2 className="mb-14 text-3xl text-white font-black">{el}</h2>
+              <div className="grid grid-cols-3 gap-6">
+                {foods[el].slice(0, 6).map((food) => {
+                  return (
+                    <FoodCart
+                      key={food._id}
+                      foodName={food.foodName}
+                      price={food.price}
+                      image={food.image}
+                      _id={food._id}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+        {/* <button onClick={response}>hii</button> */}
       </div>
-      {/* <button onClick={response}>hii</button> */}
     </div>
   );
 };
