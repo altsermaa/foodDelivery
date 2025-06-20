@@ -5,6 +5,7 @@ export type FoodProps = {
   foodName: string;
   price: number;
   image: string;
+  // qty: number;
 };
 
 type PropsType = {

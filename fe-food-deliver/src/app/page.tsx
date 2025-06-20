@@ -8,8 +8,8 @@ export default async function Home() {
 
   return (
     <div className="bg-[#404040]">
-      <div className="w-screen h-[570px] relative">
-        <Image src="/banner.png" fill objectFit="fill" alt="bannerImage" />
+      <div className="w-full h-[570px] relative">
+        <Image src="/hero.png" fill objectFit="cover" alt="bannerImage" />
       </div>
       <div className="w-full p-22">
         <PartAppetizer foods={data.foods} />

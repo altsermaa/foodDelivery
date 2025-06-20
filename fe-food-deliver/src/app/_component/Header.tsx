@@ -5,13 +5,25 @@ import Image from "next/image";
 import { InputSearch } from "./InputSearch";
 import { Email } from "./Email";
 import { useAuth } from "./UserProvider";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { useState } from "react";
+import { Order } from "./Order";
 
 export const Header = () => {
   const { user } = useAuth();
 
   return (
     <div>
-      {user.userId && (
+      {
         <div className="w-screen h-[68px] py-3 px-24 bg-[#18181B] flex justify-between relative">
           <div className="flex gap-3">
             <Image src="/logoHat.png" width={46} height={37} alt="logo" />
@@ -25,9 +37,9 @@ export const Header = () => {
           </div>
           <div className="flex gap-3">
             <InputSearch />
-            <Button className="rounded-2xl" variant="outline" size="icon">
-              <ShoppingCart />
-            </Button>
+
+            <Order />
+
             <Button className="rounded-2xl" variant="destructive" size="icon">
               <UserRound />
             </Button>
@@ -36,7 +48,7 @@ export const Header = () => {
             <Email />
           </div>
         </div>
-      )}
+      }
     </div>
   );
 };

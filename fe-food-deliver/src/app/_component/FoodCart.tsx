@@ -24,8 +24,51 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useEffect, useState } from "react";
+
+export type UnitDataType = {
+  foodName: string;
+  price: number;
+  image: string;
+  _id: string;
+  qty: number;
+};
 
 export const FoodCart = ({ foodName, price, image, _id }: FoodProps) => {
+  const [qty, setQty] = useState<number>(1);
+
+  const minusQty = () => {
+    qty > 1 && setQty((prev) => prev - 1);
+  };
+  const plusQty = () => {
+    setQty((prev) => prev + 1);
+  };
+
+  const storageKey = "foodCart";
+
+  const saveUnitData = () => {
+    const existingData = localStorage.getItem(storageKey);
+    const cartItems: UnitDataType[] = existingData
+      ? JSON.parse(existingData)
+      : [];
+
+    const isFoodExisting = cartItems.find((food) => food._id === _id);
+
+    if (isFoodExisting) {
+      const newFoods = cartItems.map((food) => {
+        if (food._id === _id) {
+          return { ...food, qty };
+        } else {
+          return food;
+        }
+      });
+      localStorage.setItem(storageKey, JSON.stringify(newFoods));
+    } else {
+      const newFoods = [...cartItems, { foodName, price, image, _id, qty }];
+      localStorage.setItem(storageKey, JSON.stringify(newFoods));
+    }
+  };
+
   return (
     <Card className="h-[342px] w-full p-4 gap-5">
       <CardDescription className="h-full w-full relative">
@@ -57,17 +100,26 @@ export const FoodCart = ({ foodName, price, image, _id }: FoodProps) => {
                 <div className="flex justify-between">
                   <div className="flex flex-col">
                     <h3>Total price</h3>
-                    <p>{price}</p>
+                    <p>{price * qty}</p>
                   </div>
                   <div className="flex h-full gap-2">
-                    <CirclePlus />
-                    <p>1</p>
-                    <CirclePlus />
+                    <button type="button" onClick={minusQty}>
+                      <CirclePlus />
+                    </button>
+
+                    <p>{qty}</p>
+                    <button type="button" onClick={plusQty}>
+                      <CirclePlus />
+                    </button>
                   </div>
                 </div>
 
                 <DialogFooter className="flex items-end">
-                  <Button type="submit" className="w-full">
+                  <Button
+                    type="button"
+                    className="w-full"
+                    onClick={saveUnitData}
+                  >
                     Add to cart
                   </Button>
                 </DialogFooter>
