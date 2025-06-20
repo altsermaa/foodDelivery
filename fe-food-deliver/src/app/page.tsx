@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import { PartAppetizer } from "./_component/PartAppetizer";
 import { ImageUpload } from "./_component/ImageUpload";

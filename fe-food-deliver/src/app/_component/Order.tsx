@@ -31,7 +31,7 @@ export const Order = () => {
   const handleOpen = () => setIsOpen(true);
   const handleClose = () => setIsOpen(false);
 
-  const [data, setData] = useState<UnitDataType[]>();
+  const [data, setData] = useState<UnitDataType[]>([]);
   console.log(data);
 
   useEffect(() => {
@@ -70,7 +70,7 @@ export const Order = () => {
                 <CardTitle>My cart</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-6">
-                {/* {data.map((food) => {
+                {data.map((food) => {
                   return (
                     <OrderedItem
                       key={food._id}
@@ -78,9 +78,10 @@ export const Order = () => {
                       price={food.price}
                       image={food.image}
                       qty={food.qty}
+                      _id={food._id}
                     />
                   );
-                })} */}
+                })}
               </CardContent>
               <CardFooter>
                 <Button>Save changes</Button>

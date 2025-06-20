@@ -13,21 +13,15 @@ export type FoodTypeProps = {
   qty: number;
 };
 
-export const OrderedItem = ({
-  foodName,
-  price,
-  image,
-  qty,
-  _id,
-}: FoodTypeProps) => {
-  // const [qty, setQty] = useState<number>(1);
+export const OrderedItem = ({ foodName, price, image, _id }: FoodTypeProps) => {
+  const [qty, setQty] = useState<number>(1);
 
-  // const minusQty = () => {
-  //   qty > 1 && setQty((prev) => prev - 1);
-  // };
-  // const plusQty = () => {
-  //   setQty((prev) => prev + 1);
-  // };
+  const minusQty = () => {
+    qty > 1 && setQty((prev) => prev - 1);
+  };
+  const plusQty = () => {
+    setQty((prev) => prev + 1);
+  };
 
   return (
     <div>
