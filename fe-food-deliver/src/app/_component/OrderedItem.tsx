@@ -1,48 +1,103 @@
 import { Button } from "@/components/ui/button";
-import { CirclePlus } from "lucide-react";
+import { CircleMinus, CirclePlus, CircleX } from "lucide-react";
 import Image from "next/image";
 import { FoodProps } from "./PartAppetizer";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { UnitDataType } from "./FoodCart";
+import { LocalDataType } from "./Order";
 
 export type FoodTypeProps = {
   _id: string;
   foodName: string;
   price: number;
   image: string;
-  qty: number;
+  quantity: number;
+  onRemove: () => void;
+  setData: Dispatch<SetStateAction<LocalDataType[]>>;
 };
 
-export const OrderedItem = ({ foodName, price, image, _id }: FoodTypeProps) => {
-  const [qty, setQty] = useState<number>(1);
+export const OrderedItem = ({
+  foodName,
+  price,
+  image,
+  quantity,
+  _id,
+  onRemove,
+  setData,
+}: FoodTypeProps) => {
+  const [qty, setQty] = useState<number>(quantity);
 
   const minusQty = () => {
     qty > 1 && setQty((prev) => prev - 1);
+    saveUnitData();
+    // setData()
   };
+
   const plusQty = () => {
     setQty((prev) => prev + 1);
+    saveUnitData();
+  };
+
+  const deleteFood = () => {
+    const storageKey = "foodCart";
+
+    const existingData = localStorage.getItem(storageKey);
+    const cartItems: UnitDataType[] = existingData
+      ? JSON.parse(existingData)
+      : [];
+
+    const newFoods = cartItems.filter((food) => food._id !== _id);
+    localStorage.setItem(storageKey, JSON.stringify(newFoods));
+
+    onRemove();
+  };
+
+  const storageKey = "foodCart";
+  const saveUnitData = () => {
+    const existingData = localStorage.getItem(storageKey);
+    const cartItems: UnitDataType[] = existingData
+      ? JSON.parse(existingData)
+      : [];
+    const newFoods = cartItems.map((food) => {
+      if (food._id === _id) {
+        return { ...food, qty };
+      } else {
+        return food;
+      }
+    });
+    localStorage.setItem(storageKey, JSON.stringify(newFoods));
   };
 
   return (
     <div>
-      <div className="flex h-[120px] w-full gap-2">
-        <div className="h-full w-full relative">
-          <Image src={image} fill objectFit="cover" alt="foodImage" />
+      <div className="flex w-[439px] h-[120px] gap-2 ">
+        <div className="h-full w-[124px] relative">
+          <Image
+            src={image}
+            fill
+            objectFit="cover"
+            alt="foodImage"
+            className="rounded-2xl"
+          />
         </div>
-        <div className="w-[377px]">
-          <div className="flex flex-col gap-4 mb-28">
-            <h3 className="text-[#FD543F] text-2xl">{foodName}</h3>
-            <p>guhijokpl;gfkdjuriweokdfsl hudfso</p>
+        <div className="flex flex-col gap-6">
+          <div className="flex h-full ">
+            <div className="flex flex-col gap-4">
+              <h3 className="text-[#FD543F] text-base">{foodName}</h3>
+              <p className="text-xs">
+                Here will be detailed description of ordered food.
+              </p>
+            </div>
+            <div onClick={deleteFood}>
+              <CircleX className="text-[#FD543F]" />
+            </div>
           </div>
 
-          <div className="flex justify-between">
-            <div className="flex flex-col">
-              <h3>Total price</h3>
-              <p>{price}</p>
-            </div>
-            <div className="flex h-full gap-2">
+          <div className="flex flex-row-reverse justify-between">
+            <p className="text-base">{price * qty}</p>
+            <div className="flex h-full gap-2 text-lg">
               <button type="button" onClick={minusQty}>
-                <CirclePlus />
+                <CircleMinus className="border-none" />
               </button>
 
               <p>{qty}</p>
@@ -50,12 +105,6 @@ export const OrderedItem = ({ foodName, price, image, _id }: FoodTypeProps) => {
                 <CirclePlus />
               </button>
             </div>
-          </div>
-
-          <div className="flex items-end">
-            <Button type="submit" className="w-full">
-              Add to cart
-            </Button>
           </div>
         </div>
       </div>

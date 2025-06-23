@@ -31,10 +31,9 @@ export type UnitDataType = {
   price: number;
   image: string;
   _id: string;
-  qty: number;
 };
 
-export const FoodCart = ({ foodName, price, image, _id }: FoodProps) => {
+export const FoodCart = ({ foodName, price, image, _id }: UnitDataType) => {
   const [qty, setQty] = useState<number>(1);
 
   const minusQty = () => {

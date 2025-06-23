@@ -11,7 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ShoppingCart } from "lucide-react";
+import { Car, ShoppingCart } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -23,22 +23,43 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { OrderedItem } from "./OrderedItem";
-import { UnitDataType } from "./FoodCart";
+import { Textarea } from "@/components/ui/textarea";
+import axios from "axios";
+import { useAuth } from "./UserProvider";
+
+export type LocalDataType = {
+  foodName: string;
+  price: number;
+  image: string;
+  _id: string;
+  qty: number;
+};
 
 export const Order = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
 
   const handleOpen = () => setIsOpen(true);
-  const handleClose = () => setIsOpen(false);
 
-  const [data, setData] = useState<UnitDataType[]>([]);
+  const [data, setData] = useState<LocalDataType[]>([]);
   console.log(data);
 
   useEffect(() => {
     const storedData: any = localStorage.getItem("foodCart");
-    const parsed: UnitDataType[] = JSON.parse(storedData);
+    const parsed: LocalDataType[] = JSON.parse(storedData);
     setData(parsed);
   }, []);
+
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post("http://localhost:8000/createOrder", {
+        user: user.userId,
+        totalPrice: data.price,
+      });
+    } catch (err: any) {
+      alert(err.response.data.message);
+    }
+  };
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -52,7 +73,7 @@ export const Order = () => {
           <ShoppingCart />
         </Button>
       </SheetTrigger>
-      <SheetContent className="rounded-2xl bg-[#404040] border shadow-black flex flex-col gap-6">
+      <SheetContent className="rounded-2xl bg-[#404040] border shadow-black flex flex-col gap-6 w-fit">
         <SheetHeader>
           <SheetTitle className="flex text-white gap-2">
             <ShoppingCart className="text-sm" />
@@ -65,7 +86,7 @@ export const Order = () => {
             <TabsTrigger value="Order">Order</TabsTrigger>
           </TabsList>
           <TabsContent value="Cart">
-            <Card>
+            <Card className="w-fit">
               <CardHeader>
                 <CardTitle>My cart</CardTitle>
               </CardHeader>
@@ -73,18 +94,63 @@ export const Order = () => {
                 {data.map((food) => {
                   return (
                     <OrderedItem
+                      setData={setData}
                       key={food._id}
                       foodName={food.foodName}
                       price={food.price}
                       image={food.image}
-                      qty={food.qty}
+                      quantity={food.qty}
                       _id={food._id}
+                      onRemove={() => {
+                        setData((prev) =>
+                          prev.filter((item) => item._id !== food._id)
+                        );
+                      }}
                     />
                   );
                 })}
+                <div className="grid w-full gap-3">
+                  <Label htmlFor="message">Delivery address</Label>
+                  <Textarea
+                    placeholder="Please share your complete address"
+                    id="message"
+                  />
+                </div>
               </CardContent>
-              <CardFooter>
-                <Button>Save changes</Button>
+            </Card>
+            <Card className="w-fit mt-6">
+              <CardHeader>
+                <CardTitle>Payment Info</CardTitle>
+              </CardHeader>
+              <CardContent className="my-5 w-[439px]">
+                <div className="flex justify-between">
+                  <p>Items</p>
+                  {/* {data.reduce(
+                    (total, food) => total + food.price * food.qty,
+                    0
+                  )} */}
+                </div>
+                <div className="flex justify-between mt-2">
+                  <p>Shipping</p>
+                  <p>{1000}₮</p>
+                </div>
+                <div className="border-b-gray-500 border-dashed my-5"></div>
+                <div className="flex justify-between">
+                  <p>Total</p>
+                  {data.reduce(
+                    (total, food) => total + food.price * food.qty,
+                    0
+                  )}
+                </div>
+              </CardContent>
+              <CardFooter className="w-full">
+                <Button
+                  variant="destructive"
+                  className="w-full"
+                  // onClick={handleSubmit}
+                >
+                  Checkout
+                </Button>
               </CardFooter>
             </Card>
           </TabsContent>
@@ -113,9 +179,6 @@ export const Order = () => {
             </Card>
           </TabsContent>
         </Tabs>
-        <SheetFooter>
-          <Button onClick={handleClose}>Close</Button>
-        </SheetFooter>
       </SheetContent>
     </Sheet>
   );
