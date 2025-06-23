@@ -42,7 +42,6 @@ export const Order = () => {
   const handleOpen = () => setIsOpen(true);
 
   const [data, setData] = useState<LocalDataType[]>([]);
-  console.log(data);
 
   useEffect(() => {
     const storedData: any = localStorage.getItem("foodCart");
@@ -51,13 +50,24 @@ export const Order = () => {
   }, []);
 
   const handleSubmit = async () => {
+    const backEndData = data.map((food) => ({
+      food: food._id,
+      quantity: food.qty,
+    }));
+    const totalPrice = data.reduce((total, food) => total + food.price * food.qty, 0);
+  
+
     try {
       const response = await axios.post("http://localhost:8000/createOrder", {
         user: user.userId,
-        totalPrice: data.price,
+        foodOrderItems: backEndData,
+        status:"PENDING",
+        totalPrice
       });
+      alert("Order placed successfully");
+      console.log(response.data);
     } catch (err: any) {
-      alert(err.response.data.message);
+      alert(err?.response?.data?.message);
     }
   };
 
@@ -147,7 +157,7 @@ export const Order = () => {
                 <Button
                   variant="destructive"
                   className="w-full"
-                  // onClick={handleSubmit}
+                  onClick={handleSubmit}
                 >
                   Checkout
                 </Button>
