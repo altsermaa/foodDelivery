@@ -2,25 +2,26 @@ import mongoose, { Schema, model } from "mongoose";
 
 const FoodOrderItem = new Schema(
   {
-    food: [{ type: Schema.ObjectId, required: true, ref: "Foods" }],
+    food: { type: Schema.ObjectId, required: true, ref: "Foods" },
     quantity: { type: Number, required: true },
   },
   { _id: false }
 );
 
 enum FoodOrderEnum {
-  PENDING,
-  CANCELLED,
-  DELIVERED,
+  PENDING = "PENDING",
+  CANCELLED = "CANCELLED",
+  DELIVERED = "DELIVERED",
 }
 
 const FoodOrder = new Schema({
   user: { type: Schema.ObjectId, required: true, ref: "Users" },
   totalPrice: { type: Number, required: true },
-  foodOrderItems: [{ type: [FoodOrderItem], required: true }],
+  foodOrderItems: { type: [FoodOrderItem], required: true },
   status: {
     type: String,
     enum: ["PENDING", "CANCELLED", "DELIVERED"],
+    default: FoodOrderEnum.PENDING,
     required: true,
   },
   createdAt: { type: Date, default: Date.now, immutable: true },

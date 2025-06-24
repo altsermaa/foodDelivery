@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider, useAuth } from "./_component/UserProvider";
 import { Header } from "./_component/Header";
 import { Footer } from "./_component/Footer";
+import { CartProvider } from "./_component/CartProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,11 +32,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
         <AuthProvider>
-          <Header />
+          <CartProvider>
+            <Header />
 
-          {children}
+            {children}
 
-          <Footer />
+            <Footer />
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>

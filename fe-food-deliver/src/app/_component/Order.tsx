@@ -3,16 +3,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
-  SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Car, ShoppingCart } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ShoppingCart } from "lucide-react";
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -26,6 +23,8 @@ import { OrderedItem } from "./OrderedItem";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { useAuth } from "./UserProvider";
+import { useCart } from "./CartProvider";
+import { OrderedFood } from "./orderedFood";
 
 export type LocalDataType = {
   foodName: string;
@@ -38,36 +37,57 @@ export type LocalDataType = {
 export const Order = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
+  const { cart, setCart, cartCount } = useCart();
+  const [order, setOrder] = useState([]);
+  console.log(order);
+
+  const token = localStorage.getItem("token");
 
   const handleOpen = () => setIsOpen(true);
 
-  const [data, setData] = useState<LocalDataType[]>([]);
-
-  useEffect(() => {
-    const storedData: any = localStorage.getItem("foodCart");
-    const parsed: LocalDataType[] = JSON.parse(storedData);
-    setData(parsed);
-  }, []);
-
   const handleSubmit = async () => {
-    const backEndData = data.map((food) => ({
+    const backEndData = cart.map((food) => ({
       food: food._id,
       quantity: food.qty,
     }));
-    const totalPrice = data.reduce((total, food) => total + food.price * food.qty, 0);
-  
+
+    const totalPrice = cart.reduce(
+      (total, food) => total + food.price * food.qty,
+      0
+    );
 
     try {
-      const response = await axios.post("http://localhost:8000/createOrder", {
-        user: user.userId,
-        foodOrderItems: backEndData,
-        status:"PENDING",
-        totalPrice
-      });
+      const response = await axios.post(
+        "http://localhost:8000/createOrder",
+        {
+          user: user.userId,
+          foodOrderItems: backEndData,
+          totalPrice,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       alert("Order placed successfully");
-      console.log(response.data);
+      localStorage.setItem("foodCart", "[]");
+      setCart([]);
     } catch (err: any) {
       alert(err?.response?.data?.message);
+    }
+  };
+
+  const showOrder = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/getOrder", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setOrder(response.data.orders);
+    } catch (err: any) {
+      alert(err.message);
     }
   };
 
@@ -81,6 +101,11 @@ export const Order = () => {
           onClick={handleOpen}
         >
           <ShoppingCart />
+          {cartCount !== 0 && (
+            <div className="w-[20px] h-[20px] absolute z-10 rounded-full bg-red-500 ml-7  mb-8">
+              {cartCount}
+            </div>
+          )}
         </Button>
       </SheetTrigger>
       <SheetContent className="rounded-2xl bg-[#404040] border shadow-black flex flex-col gap-6 w-fit">
@@ -96,15 +121,15 @@ export const Order = () => {
             <TabsTrigger value="Order">Order</TabsTrigger>
           </TabsList>
           <TabsContent value="Cart">
-            <Card className="w-fit">
+            <Card className="w-[471px]">
               <CardHeader>
                 <CardTitle>My cart</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-6">
-                {data.map((food) => {
+                {cart.map((food) => {
                   return (
                     <OrderedItem
-                      setData={setData}
+                      setCart={setCart}
                       key={food._id}
                       foodName={food.foodName}
                       price={food.price}
@@ -112,7 +137,7 @@ export const Order = () => {
                       quantity={food.qty}
                       _id={food._id}
                       onRemove={() => {
-                        setData((prev) =>
+                        setCart((prev) =>
                           prev.filter((item) => item._id !== food._id)
                         );
                       }}
@@ -128,7 +153,7 @@ export const Order = () => {
                 </div>
               </CardContent>
             </Card>
-            <Card className="w-fit mt-6">
+            <Card className="w-[471px] mt-6">
               <CardHeader>
                 <CardTitle>Payment Info</CardTitle>
               </CardHeader>
@@ -147,7 +172,7 @@ export const Order = () => {
                 <div className="border-b-gray-500 border-dashed my-5"></div>
                 <div className="flex justify-between">
                   <p>Total</p>
-                  {data.reduce(
+                  {cart.reduce(
                     (total, food) => total + food.price * food.qty,
                     0
                   )}
@@ -165,27 +190,16 @@ export const Order = () => {
             </Card>
           </TabsContent>
           <TabsContent value="Order">
-            <Card>
+            <Card className="w-[471px]">
               <CardHeader>
-                <CardTitle>Order</CardTitle>
-                <CardDescription>
-                  Make changes to your account here. Click save when you&apos;re
-                  done.
-                </CardDescription>
+                <CardTitle>Order history</CardTitle>
               </CardHeader>
-              <CardContent className="grid gap-6">
-                <div className="grid gap-3">
-                  <Label htmlFor="tabs-demo-name">Name</Label>
-                  <Input id="tabs-demo-name" defaultValue="Pedro Duarte" />
-                </div>
-                <div className="grid gap-3">
-                  <Label htmlFor="tabs-demo-username">Username</Label>
-                  <Input id="tabs-demo-username" defaultValue="@peduarte" />
-                </div>
+              <CardContent className="flex flex-col gap-6">
+                {/* {order.map((food) => (
+                  <OrderedFood createdDate={food.createdAt} totalPrice={} orderNo={} status={status}/>) 
+                  )} */}
+                <button onClick={showOrder}>Show order</button>
               </CardContent>
-              <CardFooter>
-                <Button>Save changes</Button>
-              </CardFooter>
             </Card>
           </TabsContent>
         </Tabs>

@@ -1,7 +1,6 @@
-import { Button } from "@/components/ui/button";
+
 import { CircleMinus, CirclePlus, CircleX } from "lucide-react";
 import Image from "next/image";
-import { FoodProps } from "./PartAppetizer";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { UnitDataType } from "./FoodCart";
 import { LocalDataType } from "./Order";
@@ -13,7 +12,7 @@ export type FoodTypeProps = {
   image: string;
   quantity: number;
   onRemove: () => void;
-  setData: Dispatch<SetStateAction<LocalDataType[]>>;
+  setCart: Dispatch<SetStateAction<LocalDataType[]>>;
 };
 
 export const OrderedItem = ({
@@ -23,19 +22,39 @@ export const OrderedItem = ({
   quantity,
   _id,
   onRemove,
-  setData,
 }: FoodTypeProps) => {
   const [qty, setQty] = useState<number>(quantity);
 
   const minusQty = () => {
     qty > 1 && setQty((prev) => prev - 1);
-    saveUnitData();
-    // setData()
+    const existingData = localStorage.getItem(storageKey);
+    const cartItems: UnitDataType[] = existingData
+      ? JSON.parse(existingData)
+      : [];
+    const newFoods = cartItems.map((food) => {
+      if (food._id === _id) {
+        return { ...food, qty: food.qty - 1 };
+      } else {
+        return food;
+      }
+    });
+    localStorage.setItem(storageKey, JSON.stringify(newFoods));
   };
 
   const plusQty = () => {
     setQty((prev) => prev + 1);
-    saveUnitData();
+    const existingData = localStorage.getItem(storageKey);
+    const cartItems: UnitDataType[] = existingData
+      ? JSON.parse(existingData)
+      : [];
+    const newFoods = cartItems.map((food) => {
+      if (food._id === _id) {
+        return { ...food, qty: food.qty + 1 };
+      } else {
+        return food;
+      }
+    });
+    localStorage.setItem(storageKey, JSON.stringify(newFoods));
   };
 
   const deleteFood = () => {
@@ -53,20 +72,6 @@ export const OrderedItem = ({
   };
 
   const storageKey = "foodCart";
-  const saveUnitData = () => {
-    const existingData = localStorage.getItem(storageKey);
-    const cartItems: UnitDataType[] = existingData
-      ? JSON.parse(existingData)
-      : [];
-    const newFoods = cartItems.map((food) => {
-      if (food._id === _id) {
-        return { ...food, qty };
-      } else {
-        return food;
-      }
-    });
-    localStorage.setItem(storageKey, JSON.stringify(newFoods));
-  };
 
   return (
     <div>

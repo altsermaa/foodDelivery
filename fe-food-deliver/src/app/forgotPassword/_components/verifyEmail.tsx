@@ -16,7 +16,6 @@ export const VerifyEmail = ({ stepperBack, stepperNext }: InputPropsType) => {
 
   const sendOtp = async (values: string) => {
     try {
-      console.log('hi')
       const response = await axios.post("http://localhost:8000/checkOtp", {
         code: values,
       });

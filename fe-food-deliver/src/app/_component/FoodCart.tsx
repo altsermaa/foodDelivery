@@ -25,16 +25,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
+import { useCart } from "./CartProvider";
 
 export type UnitDataType = {
   foodName: string;
   price: number;
   image: string;
   _id: string;
+  qty: number;
 };
 
 export const FoodCart = ({ foodName, price, image, _id }: UnitDataType) => {
   const [qty, setQty] = useState<number>(1);
+  const { setCart } = useCart();
 
   const minusQty = () => {
     qty > 1 && setQty((prev) => prev - 1);
@@ -62,9 +65,11 @@ export const FoodCart = ({ foodName, price, image, _id }: UnitDataType) => {
         }
       });
       localStorage.setItem(storageKey, JSON.stringify(newFoods));
+      setCart(newFoods);
     } else {
       const newFoods = [...cartItems, { foodName, price, image, _id, qty }];
       localStorage.setItem(storageKey, JSON.stringify(newFoods));
+      setCart(newFoods);
     }
   };
 
