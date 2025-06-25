@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Sheet,
@@ -14,7 +13,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -24,7 +22,8 @@ import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { useAuth } from "./UserProvider";
 import { useCart } from "./CartProvider";
-import { OrderedFood } from "./orderedFood";
+import { OrderedFood } from "./OrderedFood";
+import { LogInAlert } from "./LogInAlert";
 
 export type LocalDataType = {
   foodName: string;
@@ -34,11 +33,37 @@ export type LocalDataType = {
   qty: number;
 };
 
+type FoodType = {
+  foodName: string, 
+  price: number
+}
+
+type FoodOrderItemsType = {
+  food: FoodType,
+  quantity: number
+}
+
+
+enum FoodOrderEnum {
+  PENDING = "PENDING",
+  CANCELLED = "CANCELLED",
+  DELIVERED = "DELIVERED",
+}
+
+type OrderedFoodType ={
+  totalPrice: number, 
+  orderNo: string, 
+  status: FoodOrderEnum, 
+  foodOrderItems: FoodOrderItemsType, 
+  createdAt: Date, 
+  _id: string
+}
+
 export const Order = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
   const { cart, setCart, cartCount } = useCart();
-  const [order, setOrder] = useState([]);
+  const [order, setOrder] = useState<OrderedFoodType[]>([]);
   console.log(order);
 
   const token = localStorage.getItem("token");
@@ -46,7 +71,11 @@ export const Order = () => {
   const handleOpen = () => setIsOpen(true);
 
   const handleSubmit = async () => {
-    const backEndData = cart.map((food) => ({
+    
+    if(!user.userId) {
+      <LogInAlert />
+    } else {
+       const backEndData = cart.map((food) => ({
       food: food._id,
       quantity: food.qty,
     }));
@@ -76,6 +105,9 @@ export const Order = () => {
     } catch (err: any) {
       alert(err?.response?.data?.message);
     }
+    }
+
+   
   };
 
   const showOrder = async () => {
@@ -195,10 +227,9 @@ export const Order = () => {
                 <CardTitle>Order history</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col gap-6">
-                {/* {order.map((food) => (
-                  <OrderedFood createdDate={food.createdAt} totalPrice={} orderNo={} status={status}/>) 
-                  )} */}
-                <button onClick={showOrder}>Show order</button>
+                {order.map((food) => (
+                  <OrderedFood foodName={food.foodOrderItems.food.foodName} quantity={food.foodOrderItems.quantity} createdAt={food.createdAt} totalPrice={food.foodOrderItems.quantity * food.foodOrderItems.food.price} orderNo={food._id} status={food.status} _id={food._id}/>) 
+                  )}
               </CardContent>
             </Card>
           </TabsContent>
