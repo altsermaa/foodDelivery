@@ -1,6 +1,6 @@
 import mongoose, { Schema, model } from "mongoose";
 
-enum UserRoleEnum {
+export enum UserRoleEnum {
   ADMIN = "ADMIN",
   USER = "USER",
 }
@@ -10,7 +10,7 @@ export type User = {
   isVerified?: boolean;
   phoneNumber?: number;
   address: string;
-  role: UserRoleEnum;
+  role?: UserRoleEnum;
 };
 
 const Users = new Schema({
@@ -18,7 +18,12 @@ const Users = new Schema({
   password: { type: String, required: true },
   phoneNumber: { type: Number, required: false },
   address: { type: String, required: false },
-  role: { type: String, enum: ["USER", "ADMIN"], required: false },
+  role: {
+    type: String,
+    enum: ["USER", "ADMIN"],
+    required: false,
+    default: "USER",
+  },
   // orderedFoods: [{ type: Schema.ObjectId, required: true, ref: "Foods" }],
   isVerified: { type: Boolean, required: false },
   createdAt: { type: Date, default: Date.now, immutable: true },

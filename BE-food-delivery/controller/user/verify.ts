@@ -1,5 +1,6 @@
 import express, { Request, response, Response } from "express";
 import jwt from "jsonwebtoken";
+import { UserModel } from "../../model/user.model";
 
 export const verify = async (request: Request, response: Response) => {
   const { token } = request.body;
@@ -10,6 +11,7 @@ export const verify = async (request: Request, response: Response) => {
     const isValid = jwt.verify(token, tokenPassword);
     if (isValid) {
       const destructedToken = jwt.decode(token);
+      // const isAdmin = await UserModel.findById(token.userId)
       response.send(destructedToken);
       return;
     } else {

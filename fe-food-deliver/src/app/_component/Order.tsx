@@ -8,7 +8,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ShoppingCart } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -34,15 +34,21 @@ export type LocalDataType = {
 };
 
 type FoodType = {
-  foodName: string, 
-  price: number
-}
+  price: number;
+  categoryId: string;
+  createdAt: Date;
+  foodName: string;
+  image: string;
+  ingredients: string;
+  updatedAt: Date;
+  __v: number;
+  _id: string;
+};
 
-type FoodOrderItemsType = {
-  food: FoodType,
-  quantity: number
-}
-
+export type FoodOrderItemsType = {
+  food: FoodType;
+  quantity: number;
+};
 
 enum FoodOrderEnum {
   PENDING = "PENDING",
@@ -50,78 +56,84 @@ enum FoodOrderEnum {
   DELIVERED = "DELIVERED",
 }
 
-type OrderedFoodType ={
-  totalPrice: number, 
-  orderNo: string, 
-  status: FoodOrderEnum, 
-  foodOrderItems: FoodOrderItemsType, 
-  createdAt: Date, 
-  _id: string
-}
+type OrderedFoodType = {
+  totalPrice: number;
+  orderNo: string;
+  status: FoodOrderEnum;
+  foodOrderItems: FoodOrderItemsType[];
+  createdAt: Date;
+  _id: string;
+};
 
 export const Order = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
   const { cart, setCart, cartCount } = useCart();
   const [order, setOrder] = useState<OrderedFoodType[]>([]);
-  console.log(order);
-
-  const token = localStorage.getItem("token");
 
   const handleOpen = () => setIsOpen(true);
 
   const handleSubmit = async () => {
-    
-    if(!user.userId) {
-      <LogInAlert />
-    } else {
-       const backEndData = cart.map((food) => ({
-      food: food._id,
-      quantity: food.qty,
-    }));
+    if (typeof window !== "undefined") {
+      const token = window?.localStorage?.getItem("token");
+      if (!user.userId) {
+        <LogInAlert />;
+      } else {
+        const backEndData = cart.map((food) => ({
+          food: food._id,
+          quantity: food.qty,
+        }));
 
-    const totalPrice = cart.reduce(
-      (total, food) => total + food.price * food.qty,
-      0
-    );
+        const totalPrice = cart.reduce(
+          (total, food) => total + food.price * food.qty,
+          0
+        );
 
-    try {
-      const response = await axios.post(
-        "http://localhost:8000/createOrder",
-        {
-          user: user.userId,
-          foodOrderItems: backEndData,
-          totalPrice,
-        },
-        {
+        try {
+          const response = await axios.post(
+            "http://localhost:8000/createOrder",
+            {
+              user: user.userId,
+              foodOrderItems: backEndData,
+              totalPrice,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          alert("Order placed successfully");
+          localStorage.setItem("foodCart", "[]");
+          setCart([]);
+        } catch (err: any) {
+          alert(err?.response?.data?.message);
+        }
+      }
+    }
+  };
+  const showOrder = async () => {
+    if (typeof window !== "undefined") {
+      const token = window?.localStorage?.getItem("token");
+
+      try {
+        const response = await axios.get("http://localhost:8000/getOrder", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
-      );
-      alert("Order placed successfully");
-      localStorage.setItem("foodCart", "[]");
-      setCart([]);
-    } catch (err: any) {
-      alert(err?.response?.data?.message);
-    }
-    }
-
-   
-  };
-
-  const showOrder = async () => {
-    try {
-      const response = await axios.get("http://localhost:8000/getOrder", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setOrder(response.data.orders);
-    } catch (err: any) {
-      alert(err.message);
+        });
+        console.log(response.data.orders);
+        setOrder(response.data.orders);
+      } catch (err: any) {
+        alert(err.message);
+      }
     }
   };
+
+  useEffect(() => {
+    console.log("hi");
+    showOrder();
+  }, []);
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -140,7 +152,7 @@ export const Order = () => {
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent className="rounded-2xl bg-[#404040] border shadow-black flex flex-col gap-6 w-fit">
+      <SheetContent className="rounded-2xl bg-[#404040] border shadow-black flex flex-col gap-6 w-fit overflow-scroll">
         <SheetHeader>
           <SheetTitle className="flex text-white gap-2">
             <ShoppingCart className="text-sm" />
@@ -227,9 +239,14 @@ export const Order = () => {
                 <CardTitle>Order history</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col gap-6">
-                {order.map((food) => (
-                  <OrderedFood foodName={food.foodOrderItems.food.foodName} quantity={food.foodOrderItems.quantity} createdAt={food.createdAt} totalPrice={food.foodOrderItems.quantity * food.foodOrderItems.food.price} orderNo={food._id} status={food.status} _id={food._id}/>) 
-                  )}
+                {order?.map((food) => (
+                  <OrderedFood
+                    foodOrderItems={food.foodOrderItems}
+                    createdAt={food.createdAt}
+                    orderNo={food._id.slice(0, 5)}
+                    status={food.status}
+                  />
+                ))}
               </CardContent>
             </Card>
           </TabsContent>

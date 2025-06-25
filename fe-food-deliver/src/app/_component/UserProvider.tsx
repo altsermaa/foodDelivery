@@ -12,11 +12,12 @@ import {
 
 type User = {
   userId: string | null;
+  isAdmin: boolean;
 };
 
 type AuthContextType = {
   user: User;
-  tokenChecker: (token: string) => Promise<void>;
+  tokenChecker: (token: string) => Promise<boolean>;
 };
 
 export const AuthContext = createContext<AuthContextType>(
@@ -26,14 +27,16 @@ export const AuthContext = createContext<AuthContextType>(
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const router = useRouter();
 
-  const [user, setUser] = useState<User>({ userId: null });
+  const [user, setUser] = useState<User>({ userId: null, isAdmin: false });
 
   const tokenChecker = async (token: string) => {
     try {
       const response = await axios.post("http://localhost:8000/verify", {
         token,
       });
-      setUser({ userId: response.data.userId });
+      console.log(response);
+      setUser({ userId: response.data.userId, isAdmin: response.data.isAdmin });
+      return response.data.isAdmin;
     } catch (error) {
       // router.push("/login");
     }

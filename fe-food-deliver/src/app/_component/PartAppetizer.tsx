@@ -5,6 +5,7 @@ export type FoodProps = {
   foodName: string;
   price: number;
   image: string;
+  qty: number;
 };
 
 type PropsType = {
@@ -30,6 +31,7 @@ export const PartAppetizer = ({ foods }: PropsType) => {
                       price={food.price}
                       image={food.image}
                       _id={food._id}
+                      qty={food.qty}
                     />
                   );
                 })}

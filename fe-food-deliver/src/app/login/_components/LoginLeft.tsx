@@ -69,7 +69,6 @@ export const LoginLeft = () => {
         });
         localStorage.setItem("token", response.data.token);
         await tokenChecker(response.data.token);
-        router.push("/");
       } catch (err: any) {
         alert(err.response.data.message);
       }
@@ -97,11 +96,15 @@ export const LoginLeft = () => {
     handleSubmit: formik.handleSubmit,
   };
 
-  if (user.userId) {
-    router.push("/");
-  }
-
   const isButtonDisabled = !formik.errors.email && formik.values.email;
+
+  if (user?.userId) {
+    if (user?.isAdmin) {
+      redirect("/admin/orders");
+    } else {
+      redirect("/");
+    }
+  }
 
   return (
     <div className="flex-1/3 items-center">
