@@ -1,50 +1,76 @@
-"use client"
+"use client";
 
-import { ColumnDef } from "@tanstack/react-table"
+import { ColumnDef } from "@tanstack/react-table";
+import { Checkbox } from "@/components/ui/checkbox";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type Payment = {
-    number: number
-    customer: string
-    food: string
-    date: Date
-//   id: string
-  total: number
-  status: "pending" | "delivered" | "cancelled" 
-  address: string
-}
+  id: string;
+  number: number;
+  customer: string;
+  food: string;
+  date: string;
+  total: number;
+  status: "pending" | "delivered" | "cancelled";
+  address: string;
+};
 
-export const columns: ColumnDef<Payment>[] = [
+export const customColums = (selectHandler: any): ColumnDef<Payment>[] => {
+  return [
     {
-        accessorKey: "number",
-        header: "№",
-      },
-      {
-        accessorKey: "customer",
-        header: "Customer",
-      },
-      {
-        accessorKey: "food",
-        header: "Food",
-      },
-      {
-        accessorKey: "date",
-        header: "Date",
-      },
-      {
-        accessorKey: "total",
-        header: "Total",
-      },
-      {
-        accessorKey: "status",
-        header: "Delivery state",
-      },
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => () => {
+            table.toggleAllPageRowsSelected(!!value);
+          }}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => {
+            selectHandler(row.original.id, value);
+            row.toggleSelected(!!value);
+          }}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "number",
+      header: "№",
+    },
+    {
+      accessorKey: "customer",
+      header: "Customer",
+    },
+    {
+      accessorKey: "food",
+      header: "Food",
+    },
+    {
+      accessorKey: "date",
+      header: "Date",
+    },
+    {
+      accessorKey: "total",
+      header: "Total",
+    },
+    {
+      accessorKey: "status",
+      header: "Delivery state",
+    },
 
-  {
-    accessorKey: "address",
-    header: "Delivery address",
-  },
-
-
-]
+    {
+      accessorKey: "address",
+      header: "Delivery address",
+    },
+  ];
+};
