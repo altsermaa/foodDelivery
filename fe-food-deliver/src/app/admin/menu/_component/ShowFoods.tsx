@@ -1,4 +1,7 @@
 import { FoodCart } from "@/app/_component/FoodCart";
+import { AddBox } from "./AddBox";
+import { Button } from "@/components/ui/button";
+import { AddNewDish } from "./AddNewDish";
 
 export type FoodProps = {
   _id: string;
@@ -26,6 +29,10 @@ export const ShowFoods = ({ foods }: PropsType) => {
               {el} ({foods[el].length})
             </h2>
             <div className="grid grid-cols-5 gap-6">
+      
+                <AddNewDish />
+              
+              
               {foods[el].map((food) => (
                 <FoodCart
                   key={food._id}
