@@ -131,7 +131,6 @@ export const Order = () => {
   };
 
   useEffect(() => {
-    console.log("hi");
     showOrder();
   }, []);
 
