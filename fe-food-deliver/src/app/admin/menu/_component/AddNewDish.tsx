@@ -10,16 +10,32 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
-import { useState } from "react";
 import { AddBox } from "./AddBox";
+import { ImageUpload } from "./ImageUpload";
+import { Dispatch, SetStateAction, useState } from "react";
 
 export type NewDish = {
   foodName: string;
   price: number | undefined;
   ingredients: string;
+  image: string;
+  categoryId: string;
+};
+export type PropsType = {
+  imageUrl: string | null;
+  setImageUrl: Dispatch<SetStateAction<string | null>>;
+  setFile: Dispatch<SetStateAction<File | null>>;
 };
 
-export const AddNewDish = () => {
+export const AddNewDish = ({
+  categoryId,
+  setFoods,
+  categoryName,
+}: {
+  categoryId: string;
+  setFoods: Dispatch<SetStateAction<any[]>>;
+  categoryName: string;
+}) => {
   const [foodName, setFoodName] = useState("");
   const handleFoodName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFoodName(event.target.value);
@@ -35,12 +51,50 @@ export const AddNewDish = () => {
     setIngredients(event.target.value);
   };
 
-  const addNewDish = async ({ foodName, price }: NewDish) => {
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+
+  const addNewDish = async () => {
     try {
-      const response = await axios.post("http://localhost:8000/createFood", {
+      if (!file) {
+        alert("Please select a file");
+        return null;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "fooddelivery");
+
+      const result = await fetch(
+        "https://api.cloudinary.com/v1_1/dz8b3asdf/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      const img = await result.json();
+      await axios.post("http://localhost:8000/createFood", {
         foodName: foodName,
         price: price,
+        image: img.secure_url,
+        ingredients: ingredients,
+        categoryId: categoryId,
       });
+
+      // setFoods((prev) => ({
+      //   ...prev,
+      //   [categoryName]: [
+      //     prev[categoryName],
+      //     {
+      //       _id: "123",
+      //       foodName: foodName,
+      //       price: price,
+      //       image: img.secure_url,
+      //       ingredients: ingredients,
+      //       categoryId: categoryId,
+      //     },
+      //   ],
+      // }));
     } catch (err: any) {
       alert(err.response.data.message);
     }
@@ -56,7 +110,7 @@ export const AddNewDish = () => {
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Add new Dish to Appetizers</DialogTitle>
+            <DialogTitle>Add new Dish </DialogTitle>
           </DialogHeader>
           <div className="flex gap-6">
             <div className="grid gap-3">
@@ -93,11 +147,10 @@ export const AddNewDish = () => {
               />
             </div>
             <div className="grid gap-3">
-              <Label htmlFor="foodImage">Food Image</Label>
-              <Input
-                id="foodImage"
-                name="foodImage"
-                defaultValue="Choose a file or drag & drop it here"
+              <ImageUpload
+                imageUrl={imageUrl}
+                setImageUrl={setImageUrl}
+                setFile={setFile}
               />
             </div>
           </div>

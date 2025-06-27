@@ -25,6 +25,7 @@ export const readyFoods = async (_request: Request, response: Response) => {
               image: "$image",
               price: "$price",
               ingredients: "$ingredients",
+              categoryId: "$categoryId",
             },
           },
         },

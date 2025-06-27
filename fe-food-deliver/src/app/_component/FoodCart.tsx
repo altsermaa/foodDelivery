@@ -22,9 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useCart } from "./CartProvider";
 
 export type UnitDataType = {
@@ -137,7 +135,9 @@ export const FoodCart = ({ foodName, price, image, _id }: UnitDataType) => {
           <CardTitle className="text-[#FD543F]">{foodName}</CardTitle>
           <CardTitle>{price}</CardTitle>
         </div>
-        <CardFooter className="flex-col gap-2 text-sm">blaa blaa</CardFooter>
+        <CardFooter className="flex-col gap-2 text-sm">
+          Here will be description of food details.
+        </CardFooter>
       </CardContent>
     </Card>
   );

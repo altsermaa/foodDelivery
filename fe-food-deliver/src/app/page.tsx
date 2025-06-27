@@ -1,7 +1,6 @@
-
 import Image from "next/image";
 import { PartAppetizer } from "./_component/PartAppetizer";
-import { ImageUpload } from "./_component/ImageUpload";
+import { ImageUpload } from "./admin/menu/_component/ImageUpload";
 import axios from "axios";
 
 export default async function Home() {
@@ -15,7 +14,7 @@ export default async function Home() {
       <div className="w-full p-22">
         <PartAppetizer foods={data.foods} />
       </div>
-      <ImageUpload />
+      {/* <ImageUpload /> */}
     </div>
   );
 }

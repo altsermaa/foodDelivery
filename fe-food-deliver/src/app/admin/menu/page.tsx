@@ -2,12 +2,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { ShowCategories } from "./_component/ShowCategories";
-import { ShowFoods } from "./_component/ShowFoods";
+import { FoodProps, ShowFoods } from "./_component/ShowFoods";
 
 const MenuPage = () => {
   const [categories, setCategories] = useState([]);
   const [foods, setFoods] = useState([]);
-  console.log(foods);
+  console.log(foods, "asd");
 
   useEffect(() => {
     const getCategories = async () => {
@@ -36,15 +36,17 @@ const MenuPage = () => {
           },
         }
       );
-      setFoods(response.data.foods);
+      setFoods(response?.data?.foods);
     };
     getFoods();
   }, []);
 
+  console.log(foods);
+
   return (
     <div>
       <ShowCategories categories={categories} />
-      <ShowFoods foods={foods} />
+      <ShowFoods foods={foods} setFoods={setFoods} />
     </div>
   );
 };
