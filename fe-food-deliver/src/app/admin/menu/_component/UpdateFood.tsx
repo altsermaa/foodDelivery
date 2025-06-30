@@ -14,7 +14,35 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { FoodProps } from "./ShowFoods";
 
+export type NewDish = {
+  foodName: string;
+  price: number | undefined;
+  ingredients: string;
+  image: string;
+  categoryId: string;
+};
+
 export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
+  const [foodName, setFoodName] = useState({singleFood.foodName});
+  const handleFoodName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFoodName(event.target.value);
+  };
+
+  const [category, setCategory] = useState({singleFood.categoryName});
+  const handleCategory = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFoodName(event.target.value);
+  };
+
+  const [price, setPrice] = useState<number | undefined>(undefined);
+  const handleFoodPrice = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPrice(Number(event.target.value));
+  };
+
+  const [ingredients, setIngredients] = useState("");
+  const handleIngredients = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIngredients(event.target.value);
+  };
+
   const [singleFood, setSingleFood] = useState<FoodProps>();
   console.log(singleFood?.foodName);
 
@@ -37,7 +65,23 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
     getDishInfo();
   }, []);
 
-  const updateDish = () => {};
+  const updateDish = async() => {
+    try{
+
+      await axios.post("http://localhost:8000/updateSingleFood", {
+        foodName: foodName,
+        price: 200,
+        image: "haha",
+        ingredients: "blaa",
+      });
+
+    } catch (err: any) {
+      alert(err.response.data.message);
+    }
+  };
+
+  if (!singleFood) return null;
+
   return (
     <Dialog>
       <form>
@@ -56,8 +100,8 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
               <Input
                 id="foodName"
                 name="foodName"
-                value={singleFood?.foodName}
-                // onChange={handleFoodName}
+                value={foodName}
+                onChange={handleFoodName}
               />
             </div>
             <div className="flex gap-3">
@@ -65,8 +109,8 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
               <Input
                 id="category"
                 name="category"
-                value={singleFood?.foodName}
-                // onChange={}
+                value={category}
+                onChange={handleCategory}
               />
             </div>
             <div className="flex gap-3">
@@ -75,8 +119,8 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
                 id="ingredients"
                 name="ingredients"
                 defaultValue="List ingredients"
-                value={singleFood?.ingredients}
-                //   onChange={handleIngredients}
+                value={ingredients}
+                onChange={handleIngredients}
               />
             </div>
             <div className="flex gap-3">
@@ -85,8 +129,8 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
                 id="price"
                 name="price"
                 type="number"
-                value={singleFood?.price}
-                //   onChange={handleFoodPrice}
+                value={price}
+                onChange={handleFoodPrice}
               />
             </div>
             <div className="flex gap-3">
