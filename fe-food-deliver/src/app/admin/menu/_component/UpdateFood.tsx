@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Pen, Trash } from "lucide-react";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { FoodProps } from "./ShowFoods";
+import { FoodProps } from "../page";
 
 export type NewDish = {
   foodName: string;
@@ -23,12 +23,12 @@ export type NewDish = {
 };
 
 export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
-  const [foodName, setFoodName] = useState({singleFood.foodName});
+  const [foodName, setFoodName] = useState("");
   const handleFoodName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFoodName(event.target.value);
   };
 
-  const [category, setCategory] = useState({singleFood.categoryName});
+  const [category, setCategory] = useState("");
   const handleCategory = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFoodName(event.target.value);
   };
@@ -43,7 +43,7 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
     setIngredients(event.target.value);
   };
 
-  const [singleFood, setSingleFood] = useState<FoodProps>();
+  const [singleFood, setSingleFood] = useState<FoodProps | null>(null);
   console.log(singleFood?.foodName);
 
   useEffect(() => {
@@ -60,21 +60,35 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
           },
         }
       );
+      const fetched = response.data.result;
       setSingleFood(response.data.result);
+      setFoodName(fetched.foodName);
+      setPrice(fetched.price);
+      setIngredients(fetched.ingredients);
     };
     getDishInfo();
-  }, []);
+  }, [foodItemId]);
 
-  const updateDish = async() => {
-    try{
-
-      await axios.post("http://localhost:8000/updateSingleFood", {
-        foodName: foodName,
-        price: 200,
-        image: "haha",
-        ingredients: "blaa",
-      });
-
+  const updateDish = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.put(
+        "http://localhost:8000/admin/updateSingleFood",
+        {
+          _id: foodItemId,
+          foodName: foodName,
+          price: price,
+          image:
+            "https://res.cloudinary.com/dz8b3asdf/image/upload/v1750038968/cld-sample-4.jpg",
+          ingredients: ingredients,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      alert("Dish updated successfully");
     } catch (err: any) {
       alert(err.response.data.message);
     }

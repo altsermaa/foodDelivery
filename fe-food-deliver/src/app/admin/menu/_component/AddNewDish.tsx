@@ -13,15 +13,16 @@ import axios from "axios";
 import { AddBox } from "./AddBox";
 import { ImageUpload } from "./ImageUpload";
 import { Dispatch, SetStateAction, useState } from "react";
+import { FoodProps } from "../page";
 
-export type NewDish = {
-  foodName: string;
-  price: number | undefined;
-  ingredients: string;
-  image: string;
-  categoryId: string;
-};
-export type PropsType = {
+// export type NewDish = {
+//   foodName: string;
+//   price: number | undefined;
+//   ingredients: string;
+//   image: string;
+//   categoryId: string;
+// };
+export type AddNewType = {
   imageUrl: string | null;
   setImageUrl: Dispatch<SetStateAction<string | null>>;
   setFile: Dispatch<SetStateAction<File | null>>;
@@ -33,7 +34,7 @@ export const AddNewDish = ({
   categoryName,
 }: {
   categoryId: string;
-  setFoods: Dispatch<SetStateAction<any[]>>;
+  setFoods: Dispatch<SetStateAction<Record<string, FoodProps[]>>>;
   categoryName: string;
 }) => {
   const [foodName, setFoodName] = useState("");

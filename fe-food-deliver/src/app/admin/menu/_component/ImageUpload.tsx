@@ -2,10 +2,9 @@
 
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
-import { useState } from "react";
-import { PropsType } from "./AddNewDish";
+import { AddNewType } from "./AddNewDish";
 
-export const ImageUpload = ({ imageUrl, setImageUrl, setFile }: PropsType) => {
+export const ImageUpload = ({ imageUrl, setImageUrl, setFile }: AddNewType) => {
   const fileHandler = (event: any) => {
     setFile(event?.target.files[0]);
     const imgUrl = URL.createObjectURL(event?.target.files[0]);

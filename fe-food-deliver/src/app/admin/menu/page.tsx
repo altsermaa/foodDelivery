@@ -1,12 +1,26 @@
 "use client";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ShowCategories } from "./_component/ShowCategories";
-import { FoodProps, ShowFoods } from "./_component/ShowFoods";
+import { ShowFoods } from "./_component/ShowFoods";
+
+export type FoodProps = {
+  _id: string;
+  foodName: string;
+  price: number;
+  image: string;
+  ingredients: string;
+  categoryId: string;
+};
+
+export type PropsType = {
+  foods: Record<string, FoodProps[]>;
+  setFoods: Dispatch<SetStateAction<Record<string, FoodProps[]>>>;
+};
 
 const MenuPage = () => {
   const [categories, setCategories] = useState([]);
-  const [foods, setFoods] = useState([]);
+  const [foods, setFoods] = useState<Record<string, FoodProps[]>>({});
   console.log(foods, "asd");
 
   useEffect(() => {

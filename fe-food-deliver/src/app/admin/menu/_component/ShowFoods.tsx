@@ -4,21 +4,7 @@ import { Button } from "@/components/ui/button";
 import { AddNewDish } from "./AddNewDish";
 import { Dispatch, SetStateAction } from "react";
 import { ShowSingleFood } from "./ShowSingleFood";
-
-export type FoodProps = {
-  _id: string;
-  foodName: string;
-  price: number;
-  image: string;
-  // qty: number;
-  ingredients: string;
-  categoryId: string;
-};
-
-export type PropsType = {
-  foods: Record<string, FoodProps[]>;
-  setFoods: Dispatch<SetStateAction<any[]>>;
-};
+import { PropsType } from "../page";
 
 export const ShowFoods = ({ foods, setFoods }: PropsType) => {
   const keys = Object.keys(foods);
@@ -45,7 +31,6 @@ export const ShowFoods = ({ foods, setFoods }: PropsType) => {
                   price={food.price}
                   image={food.image}
                   _id={food._id}
-                  // qty={food.qty}
                 />
               ))}
             </div>
