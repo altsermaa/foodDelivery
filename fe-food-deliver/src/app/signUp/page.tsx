@@ -71,10 +71,13 @@ const SignUpPage = () => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
-        const response = await axios.post("http://localhost:8000/signUp", {
-          email: values.email,
-          password: values.password,
-        });
+        const response = await axios.post(
+          "https://fooddelivery-q3yg.onrender.com/signUp",
+          {
+            email: values.email,
+            password: values.password,
+          }
+        );
         console.log(response);
         router.push("/login");
       } catch (err: any) {

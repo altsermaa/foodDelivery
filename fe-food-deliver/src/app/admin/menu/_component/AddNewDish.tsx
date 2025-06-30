@@ -74,7 +74,7 @@ export const AddNewDish = ({
         }
       );
       const img = await result.json();
-      await axios.post("http://localhost:8000/createFood", {
+      await axios.post("https://fooddelivery-q3yg.onrender.com/createFood", {
         foodName: foodName,
         price: price,
         image: img.secure_url,

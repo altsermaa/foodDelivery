@@ -16,9 +16,12 @@ export const VerifyEmail = ({ stepperBack, stepperNext }: InputPropsType) => {
 
   const sendOtp = async (values: string) => {
     try {
-      const response = await axios.post("http://localhost:8000/checkOtp", {
-        code: values,
-      });
+      const response = await axios.post(
+        "https://fooddelivery-q3yg.onrender.com/checkOtp",
+        {
+          code: values,
+        }
+      );
       console.log(response);
       if (response.data === "wrong code") {
         setError(response.data);

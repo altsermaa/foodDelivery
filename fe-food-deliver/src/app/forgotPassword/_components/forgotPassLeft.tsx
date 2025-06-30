@@ -30,9 +30,12 @@ export const ForgotPassLeft = ({
 
   const checkEmail = async () => {
     try {
-      const response = await axios.put("http://localhost:8000/checkEmail", {
-        email: values.email,
-      });
+      const response = await axios.put(
+        "https://fooddelivery-q3yg.onrender.com/checkEmail",
+        {
+          email: values.email,
+        }
+      );
       console.log(response);
       if (response.data === "User does not exist") {
         setError(response.data);

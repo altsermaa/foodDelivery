@@ -91,7 +91,7 @@ export const Order = () => {
 
         try {
           const response = await axios.post(
-            "http://localhost:8000/createOrder",
+            "https://fooddelivery-q3yg.onrender.com/createOrder",
             {
               user: user.userId,
               foodOrderItems: backEndData,
@@ -117,11 +117,14 @@ export const Order = () => {
       const token = window?.localStorage?.getItem("token");
 
       try {
-        const response = await axios.get("http://localhost:8000/getOrder", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(
+          "https://fooddelivery-q3yg.onrender.com/getOrder",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         console.log(response.data.orders);
         setOrder(response.data.orders);
       } catch (err: any) {

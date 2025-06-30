@@ -63,10 +63,13 @@ export const LoginLeft = () => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
-        const response = await axios.post("http://localhost:8000/login", {
-          email: values.email,
-          password: values.password,
-        });
+        const response = await axios.post(
+          "https://fooddelivery-q3yg.onrender.com/login",
+          {
+            email: values.email,
+            password: values.password,
+          }
+        );
         localStorage.setItem("token", response.data.token);
         await tokenChecker(response.data.token);
       } catch (err: any) {

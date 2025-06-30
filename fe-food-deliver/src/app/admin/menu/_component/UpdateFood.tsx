@@ -50,7 +50,7 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
     const token = localStorage.getItem("token");
     const getDishInfo = async () => {
       const response = await axios.post(
-        "http://localhost:8000/admin/getSingleFood",
+        "https://fooddelivery-q3yg.onrender.com/admin/getSingleFood",
         {
           _id: foodItemId,
         },
@@ -73,7 +73,7 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
     const token = localStorage.getItem("token");
     try {
       await axios.put(
-        "http://localhost:8000/admin/updateSingleFood",
+        "https://fooddelivery-q3yg.onrender.com/admin/updateSingleFood",
         {
           _id: foodItemId,
           foodName: foodName,

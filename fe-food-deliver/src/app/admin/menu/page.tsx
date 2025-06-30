@@ -27,7 +27,7 @@ const MenuPage = () => {
     const getCategories = async () => {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "http://localhost:8000/admin/getCategories",
+        "https://fooddelivery-q3yg.onrender.com/admin/getCategories",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -43,7 +43,7 @@ const MenuPage = () => {
     const getFoods = async () => {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "http://localhost:8000/admin/readyFoods",
+        "https://fooddelivery-q3yg.onrender.com/admin/readyFoods",
         {
           headers: {
             Authorization: `Bearer ${token}`,

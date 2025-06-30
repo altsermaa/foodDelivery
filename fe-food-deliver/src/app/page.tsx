@@ -4,7 +4,9 @@ import { ImageUpload } from "./admin/menu/_component/ImageUpload";
 import axios from "axios";
 
 export default async function Home() {
-  const { data } = await axios.get("http://localhost:8000/readyFoods");
+  const { data } = await axios.get(
+    "https://fooddelivery-q3yg.onrender.com/readyFoods"
+  );
 
   return (
     <div className="bg-[#404040]">

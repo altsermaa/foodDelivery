@@ -23,7 +23,7 @@ const AdminHomePage = () => {
       const token = window?.localStorage?.getItem("token");
 
       const response: any = await axios.get(
-        "http://localhost:8000/admin/getAllOrder",
+        "https://fooddelivery-q3yg.onrender.com/admin/getAllOrder",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -72,7 +72,7 @@ const AdminHomePage = () => {
     }));
 
     await axios.put(
-      "http://localhost:8000/admin/updateOrder",
+      "https://fooddelivery-q3yg.onrender.com/admin/updateOrder",
       {
         orders: prepare,
       },

@@ -46,10 +46,13 @@ export const ResetPassword = ({
   const resetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.put("http://localhost:8000/resetPassword", {
-        email: values.email,
-        password: values.password,
-      });
+      const response = await axios.put(
+        "https://fooddelivery-q3yg.onrender.com/resetPassword",
+        {
+          email: values.email,
+          password: values.password,
+        }
+      );
 
       if (response.data === "Reset password successfully") {
         router.push("/login");
