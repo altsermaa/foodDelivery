@@ -61,10 +61,12 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
           },
         }
       );
-      const fetched = response.data.result;
+     
       setSingleFood(response.data.result);
       setFoodName(response.data.result.foodName)
       setCategory(response.data.result.categoryName)
+      setPrice(response.data.result.price); 
+      setIngredients(response.data.result.ingredients);
     };
     getDishInfo();
   }, [foodItemId]);

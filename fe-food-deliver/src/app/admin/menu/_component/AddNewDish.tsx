@@ -119,7 +119,7 @@ export const AddNewDish = ({
               <Input
                 id="foodName"
                 name="foodName"
-                defaultValue="Type food name"
+                placeholder="Type food name"
                 value={foodName}
                 onChange={handleFoodName}
               />
@@ -129,7 +129,7 @@ export const AddNewDish = ({
               <Input
                 id="foodPrice"
                 name="foodPrice"
-                defaultValue="Enter price"
+                placeholder="Enter price"
                 type="number"
                 value={price}
                 onChange={handleFoodPrice}
@@ -142,7 +142,7 @@ export const AddNewDish = ({
               <Input
                 id="ingredients"
                 name="ingredients"
-                defaultValue="List ingredients"
+                placeholder="List ingredients"
                 value={ingredients}
                 onChange={handleIngredients}
               />

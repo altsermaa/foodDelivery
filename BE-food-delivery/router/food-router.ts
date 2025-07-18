@@ -7,5 +7,5 @@ import { readyFoods } from "../controller/food/ready-foods";
 export const FoodRouter = Router();
 
 FoodRouter.post("/createFood", createFood);
-FoodRouter.post("/createCategory", tokenChecker, createCategory);
+FoodRouter.post("/createCategory", createCategory);
 FoodRouter.get("/readyFoods", readyFoods);
