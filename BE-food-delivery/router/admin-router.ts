@@ -7,6 +7,7 @@ import { getCategories } from "../controller/admin/get-all-category";
 import { readyFoods } from "../controller/food/ready-foods";
 import { updateSingleFood } from "../controller/admin/update-single-food";
 import { getSingleFood } from "../controller/admin/get-single-food";
+import { deleteFood } from "../controller/admin/delete-single-food";
 
 export const AdminRouter = Router();
 
@@ -20,3 +21,4 @@ AdminRouter.put(
   updateSingleFood
 );
 AdminRouter.post("/admin/getSingleFood", [tokenChecker, isAdmin], getSingleFood);
+AdminRouter.delete("/admin/deleteFood", deleteFood)

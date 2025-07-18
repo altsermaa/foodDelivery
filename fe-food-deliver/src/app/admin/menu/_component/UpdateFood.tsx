@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { FoodProps } from "../page";
 
 export type NewDish = {
-  foodName: string;
+  foodName: string | undefined;
   price: number | undefined;
   ingredients: string;
   image: string;
@@ -23,6 +23,9 @@ export type NewDish = {
 };
 
 export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
+  const [singleFood, setSingleFood] = useState<FoodProps>();
+  console.log(singleFood?.foodName);
+
   const [foodName, setFoodName] = useState("");
   const handleFoodName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFoodName(event.target.value);
@@ -43,8 +46,6 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
     setIngredients(event.target.value);
   };
 
-  const [singleFood, setSingleFood] = useState<FoodProps | null>(null);
-  console.log(singleFood?.foodName);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -62,9 +63,8 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
       );
       const fetched = response.data.result;
       setSingleFood(response.data.result);
-      setFoodName(fetched.foodName);
-      setPrice(fetched.price);
-      setIngredients(fetched.ingredients);
+      setFoodName(response.data.result.foodName)
+      setCategory(response.data.result.categoryName)
     };
     getDishInfo();
   }, [foodItemId]);
@@ -93,6 +93,19 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
       alert(err.response.data.message);
     }
   };
+
+  const deleteDish = async() => {
+    try{
+      await axios.delete("http://localhost:8000/admin/deleteFood", 
+        {
+          data: {_id:foodItemId}
+        }, 
+
+      )
+    }catch(err:any) {
+      alert(err.response.data.message);
+    }
+  }
 
   if (!singleFood) return null;
 
@@ -156,7 +169,7 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
             </div>
           </div>
           <DialogFooter className="flex justify-between">
-            <Trash className="text-red-600" />
+            <Trash className="text-red-600" onClick={deleteDish}/>
             <Button type="submit" onClick={updateDish}>
               Save changes
             </Button>

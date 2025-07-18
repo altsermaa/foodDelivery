@@ -31,9 +31,10 @@ export type UnitDataType = {
   image: string;
   _id: string;
   qty: number;
+  ingredients:string
 };
 
-export const FoodCart = ({ foodName, price, image, _id }: UnitDataType) => {
+export const FoodCart = ({ foodName, price, image, _id, ingredients }: UnitDataType) => {
   const [qty, setQty] = useState<number>(1);
   const { setCart } = useCart();
 
@@ -65,7 +66,7 @@ export const FoodCart = ({ foodName, price, image, _id }: UnitDataType) => {
       localStorage.setItem(storageKey, JSON.stringify(newFoods));
       setCart(newFoods);
     } else {
-      const newFoods = [...cartItems, { foodName, price, image, _id, qty }];
+      const newFoods = [...cartItems, { foodName, price, image, _id, qty, ingredients }];
       localStorage.setItem(storageKey, JSON.stringify(newFoods));
       setCart(newFoods);
     }
@@ -95,7 +96,7 @@ export const FoodCart = ({ foodName, price, image, _id }: UnitDataType) => {
                     {foodName}
                   </DialogTitle>
                   <DialogDescription>
-                    guhijokpl;gfkdjuriweokdfsl hudfso
+                    {ingredients}
                   </DialogDescription>
                 </div>
 
@@ -136,7 +137,7 @@ export const FoodCart = ({ foodName, price, image, _id }: UnitDataType) => {
           <CardTitle>{price}</CardTitle>
         </div>
         <CardFooter className="flex-col gap-2 text-sm">
-          Here will be description of food details.
+          {ingredients}
         </CardFooter>
       </CardContent>
     </Card>
