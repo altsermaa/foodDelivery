@@ -17,6 +17,7 @@ const AdminHomePage = () => {
   const [orderStatus, setOrderStatus] = useState<orderStatusType>(
     orderStatusType.PENDING
   );
+  console.log(order)
 
   useEffect(() => {
     const fetchData = async () => {

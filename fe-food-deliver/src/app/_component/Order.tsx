@@ -75,6 +75,7 @@ export const Order = () => {
   const { cart, setCart, cartCount } = useCart();
   const [order, setOrder] = useState<OrderedFoodType[]>([]);
   const [location, setLocation] = useState("");
+  console.log(order)
 
   const handleLocation = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLocation(event.target.value);
@@ -86,7 +87,6 @@ export const Order = () => {
   const shippingCost = 20
 
   const handleSubmit = async () => {
-    console.log("hi")
     if (typeof window !== "undefined") {
       const token = window?.localStorage?.getItem("token");
       if (!user.userId) {
