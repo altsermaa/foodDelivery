@@ -11,7 +11,8 @@ export const getAllOrder = async (request: Request, response: Response) => {
       },
     }).populate({
       path: "user",
-      model: "Users"
+      model: "Users",
+      select: "address"
     })
     response.status(200).send({ message: "All orders in database", allOrders });
   } catch (err) {
