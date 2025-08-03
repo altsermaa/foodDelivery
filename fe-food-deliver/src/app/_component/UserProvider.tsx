@@ -13,11 +13,13 @@ import {
 type User = {
   userId: string | null;
   isAdmin: boolean;
+  email: string | null;
 };
 
 type AuthContextType = {
   user: User;
   tokenChecker: (token: string) => Promise<boolean>;
+  signOut: () => void;
 };
 
 export const AuthContext = createContext<AuthContextType>(
@@ -27,7 +29,7 @@ export const AuthContext = createContext<AuthContextType>(
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const router = useRouter();
 
-  const [user, setUser] = useState<User>({ userId: null, isAdmin: false });
+  const [user, setUser] = useState<User>({ userId: null, isAdmin: false, email: null });
 
   const tokenChecker = async (token: string) => {
     try {
@@ -38,11 +40,19 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         }
       );
       console.log(response);
-      setUser({ userId: response.data.userId, isAdmin: response.data.isAdmin });
+      setUser({ userId: response.data.userId, isAdmin: response.data.isAdmin, email: response.data.email });
       return response.data.isAdmin;
     } catch (error) {
       // router.push("/login");
     }
+  };
+
+  const signOut = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("foodCart");
+    localStorage.removeItem("location");
+    setUser({ userId: null, isAdmin: false, email: null });
+    router.push("/login");
   };
 
   useEffect(() => {
@@ -56,7 +66,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, tokenChecker }}>
+    <AuthContext.Provider value={{ user, tokenChecker, signOut }}>
       {children}
     </AuthContext.Provider>
   );

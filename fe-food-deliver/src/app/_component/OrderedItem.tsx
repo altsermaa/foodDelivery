@@ -11,6 +11,7 @@ export type FoodTypeProps = {
   price: number;
   image: string;
   quantity: number;
+  ingredients:string,
   onRemove: () => void;
   setCart: Dispatch<SetStateAction<LocalDataType[]>>;
 };
@@ -21,6 +22,7 @@ export const OrderedItem = ({
   image,
   quantity,
   _id,
+  ingredients,
   onRemove,
 }: FoodTypeProps) => {
   const [qty, setQty] = useState<number>(quantity);
@@ -90,7 +92,7 @@ export const OrderedItem = ({
             <div className="flex flex-col gap-4">
               <h3 className="text-[#FD543F] text-base">{foodName}</h3>
               <p className="text-xs">
-                Here will be detailed description of ordered food.
+                {ingredients}
               </p>
             </div>
             <div onClick={deleteFood}>
@@ -99,7 +101,7 @@ export const OrderedItem = ({
           </div>
 
           <div className="flex flex-row-reverse justify-between">
-            <p className="text-base">{price * qty}</p>
+            <p className="text-base">{price * qty}$</p>
             <div className="flex h-full gap-2 text-lg">
               <button type="button" onClick={minusQty}>
                 <CircleMinus className="border-none" />

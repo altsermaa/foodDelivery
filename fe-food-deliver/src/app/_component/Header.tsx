@@ -15,11 +15,37 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Order } from "./Order";
+import Link from "next/link";
 
 export const Header = () => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const toggleDropdown = () => {
+    setShowDropdown((prev) => !prev);
+  };
+
+  const handleSignOut = () => {
+    signOut();
+    setShowDropdown(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
 
   return (
     <div>
@@ -40,13 +66,31 @@ export const Header = () => {
 
             <Order />
 
-            <Button className="rounded-2xl" variant="destructive" size="icon">
+            <Button className="rounded-2xl" variant="destructive" size="icon" onClick={toggleDropdown}>
               <UserRound />
             </Button>
           </div>
-          <div className="absolute top-15 right-25 z-50">
-            <Email />
-          </div>
+          {showDropdown && (
+            <div className="absolute top-15 right-6 bg-white rounded-md shadow-md p-4 z-50 space-y-2" ref={dropdownRef}>
+              {!user.userId ? (
+                <Link href="/login">
+                  <Button variant="secondary" className="w-full">
+                    Login
+                  </Button>
+                </Link>
+              ) : (
+                <>
+                  <div className="w-[188px] h-fit bg-white rounded-xl p-4 gap-2 text-center">
+                    <p className="text-black">{user.email}</p>
+                  </div>
+                  <Button variant="secondary" className="w-full" onClick={handleSignOut}>
+                    Sign out
+                  </Button>
+                </>
+              )}
+            </div>
+          )}
+
         </div>
       }
     </div>

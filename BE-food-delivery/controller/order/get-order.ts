@@ -13,11 +13,23 @@ export const getOrder = async (_request: Request, response: Response) => {
         path: "food",
         model: "Foods",
       },
+    }).populate({
+      path: "user",
+      model: "Users",
+      select: "address"
     });
+
+    const filteredOrders = allOrdersByUserId.map(order => {
+      const filteredFoodOrderItems = order.foodOrderItems.filter(item => item.food !== null);
+      return {
+        ...order.toObject(),
+        foodOrderItems: filteredFoodOrderItems
+      };
+    }).filter(order => order.foodOrderItems.length > 0);
 
     response.status(200).send({
       message: "Order fetched successfully",
-      orders: allOrdersByUserId,
+      orders: filteredOrders,
     });
   } catch (err) {
     console.log(err);

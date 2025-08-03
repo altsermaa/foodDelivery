@@ -72,6 +72,13 @@ export const FoodCart = ({ foodName, price, image, _id, ingredients }: UnitDataT
     }
   };
 
+  const USDollar = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  });
+
+  const sum =(USDollar.format(qty * price)); 
+
   return (
     <Card className="h-[342px] w-full p-4 gap-5">
       <CardDescription className="h-full w-full relative">
@@ -90,8 +97,8 @@ export const FoodCart = ({ foodName, price, image, _id, ingredients }: UnitDataT
               <div className="h-full w-full relative">
                 <Image src={image} fill objectFit="cover" alt="foodImage" />
               </div>
-              <div className="w-[377px]">
-                <div className="flex flex-col gap-4 mb-28">
+              <div className="w-[377px] flex flex-col justify-between">
+                <div className="flex flex-col gap-4">
                   <DialogTitle className="text-[#FD543F] text-2xl">
                     {foodName}
                   </DialogTitle>
@@ -100,10 +107,11 @@ export const FoodCart = ({ foodName, price, image, _id, ingredients }: UnitDataT
                   </DialogDescription>
                 </div>
 
-                <div className="flex justify-between">
+                <div>
+                  <div className="flex justify-between">
                   <div className="flex flex-col">
                     <h3>Total price</h3>
-                    <p>{price * qty}</p>
+                    <p>{sum}</p>
                   </div>
                   <div className="flex h-full gap-2">
                     <button type="button" onClick={minusQty}>
@@ -115,17 +123,20 @@ export const FoodCart = ({ foodName, price, image, _id, ingredients }: UnitDataT
                       <CirclePlus />
                     </button>
                   </div>
+                  </div>
+
+                  <DialogFooter className="flex items-end">
+                    <Button
+                      type="button"
+                      className="w-full"
+                      onClick={saveUnitData}
+                    >
+                      Add to cart
+                    </Button>
+                  </DialogFooter>
                 </div>
 
-                <DialogFooter className="flex items-end">
-                  <Button
-                    type="button"
-                    className="w-full"
-                    onClick={saveUnitData}
-                  >
-                    Add to cart
-                  </Button>
-                </DialogFooter>
+                
               </div>
             </DialogContent>
           </form>

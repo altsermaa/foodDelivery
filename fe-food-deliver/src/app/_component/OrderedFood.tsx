@@ -13,6 +13,9 @@ type OrderedFoodType = {
   status: FoodOrderEnum;
   createdAt: Date;
   foodOrderItems: FoodOrderItemsType[];
+  user?: {
+    address: string;
+  };
 };
 
 export const OrderedFood = ({
@@ -20,15 +23,22 @@ export const OrderedFood = ({
   status,
   createdAt,
   foodOrderItems,
+  user,
 }: OrderedFoodType) => {
   const itemtotalPrice = foodOrderItems.reduce((acc, item) => {
+    if (!item.food) {
+      return acc;
+    }
     return (acc += item.food.price * item.quantity);
   }, 0);
+  
+  const validFoodItems = foodOrderItems.filter(item => item.food !== null);
+  
   return (
     <div>
-      {foodOrderItems.map((item) => {
+      {validFoodItems.map((item, index) => {
         return (
-          <div>
+          <div key={index}>
             <div className="flex justify-between">
               <div className="flex gap-1 font-black">
                 <p>{itemtotalPrice.toFixed(2)}</p>
@@ -40,7 +50,7 @@ export const OrderedFood = ({
             <div className="flex justify-between">
               <div className="flex gap-1">
                 <Soup />
-                <p>{item.food.foodName}</p>
+                <p>{item.food.foodName || "Unknown food"} </p>
               </div>
               <p>x {item.quantity}</p>
             </div>
@@ -48,9 +58,9 @@ export const OrderedFood = ({
               <AlarmClock />
               <p>{format(new Date(createdAt), "yyyy-MM-dd")}</p>
             </div>
-            <div className="flex">
+            <div className="flex gap-1">
               <Map />
-              <p>address</p>
+              <p>{user?.address || "No address available"}</p>
             </div>
           </div>
         );

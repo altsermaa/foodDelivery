@@ -8,15 +8,16 @@ export type CartItemType = {
   image: string;
   _id: string;
   qty: number;
+  ingredients: string;
 };
 
 type CartContextType = {
   cart: CartItemType[];
   setCart: React.Dispatch<React.SetStateAction<CartItemType[]>>;
   cartCount: number;
-  //   updateCartCount: () => void;
-  address: string;
-  setAddress: (addr: string) => void;
+  updateCartCount: () => void;
+  // address: string;
+  // setAddress: (addr: string) => void;
 };
 
 export const CartContext = createContext<CartContextType>(
@@ -29,10 +30,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cartCount, setCartCount] = useState<number>(0);
   const [address, setAddress] = useState<string>("");
 
-  //   const updateCartCount = () => {
-  //     const total = cart.reduce((sum, item) => sum + item.addcount, 0);
-  //     setCartCount(total);
-  //   };
+  const updateCartCount = () => {
+      const total = cart.reduce((sum, item) => sum + item.qty, 0);
+      setCartCount(total);
+    };
 
   useEffect(() => {
     const storedAddress = localStorage.getItem("deliveryAddress");
@@ -51,7 +52,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     localStorage.setItem("foodCart", JSON.stringify(cart));
-    // updateCartCount();
+    updateCartCount();
   }, [cart]);
 
   return (
@@ -60,8 +61,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         cart,
         setCart,
         cartCount,
-        /*updateCartCount,*/ address,
-        setAddress,
+        updateCartCount
+        // address,
+        // setAddress,
       }}
     >
       {children}

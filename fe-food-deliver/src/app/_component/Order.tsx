@@ -17,13 +17,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { OrderedItem } from "./OrderedItem";
-import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { useAuth } from "./UserProvider";
 import { useCart } from "./CartProvider";
 import { OrderedFood } from "./OrderedFood";
 import { LogInAlert } from "./LogInAlert";
+import { Input } from "@/components/ui/input";
+import { OrderedItem } from "./OrderedItem";
 
 export type LocalDataType = {
   foodName: string;
@@ -31,6 +31,7 @@ export type LocalDataType = {
   image: string;
   _id: string;
   qty: number;
+  ingredients: string
 };
 
 type FoodType = {
@@ -63,6 +64,9 @@ type OrderedFoodType = {
   foodOrderItems: FoodOrderItemsType[];
   createdAt: Date;
   _id: string;
+  user?: {
+    address: string;
+  };
 };
 
 export const Order = () => {
@@ -70,10 +74,19 @@ export const Order = () => {
   const { user } = useAuth();
   const { cart, setCart, cartCount } = useCart();
   const [order, setOrder] = useState<OrderedFoodType[]>([]);
+  const [location, setLocation] = useState("");
+
+  const handleLocation = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLocation(event.target.value);
+  };
 
   const handleOpen = () => setIsOpen(true);
 
+  const itemsSum = cart.reduce((total, food) => total + food.price * food.qty,0)
+  const shippingCost = 20
+
   const handleSubmit = async () => {
+    console.log("hi")
     if (typeof window !== "undefined") {
       const token = window?.localStorage?.getItem("token");
       if (!user.userId) {
@@ -103,8 +116,28 @@ export const Order = () => {
               },
             }
           );
+          
+          const storedLocation = localStorage.getItem("location");
+          const locationToSend = storedLocation || location;
+          
+          const updatedLocation = {
+            id: user.userId,
+            address: locationToSend
+          };
+          
+          const sendLocation = await axios.put(
+            "https://fooddelivery-q3yg.onrender.com/updateAddress",
+            updatedLocation,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              }, 
+            }
+          );
+          
           alert("Order placed successfully");
           localStorage.setItem("foodCart", "[]");
+          localStorage.setItem("location", "[]");
           setCart([]);
         } catch (err: any) {
           alert(err?.response?.data?.message);
@@ -115,6 +148,15 @@ export const Order = () => {
   const showOrder = async () => {
     if (typeof window !== "undefined") {
       const token = window?.localStorage?.getItem("token");
+
+      const storageKey = "location";
+      const existingData = localStorage.getItem(storageKey);
+
+      if (existingData) {
+        setLocation(existingData);
+      } else {
+        setLocation(""); 
+      }
 
       try {
         const response = await axios.get(
@@ -128,7 +170,7 @@ export const Order = () => {
         console.log(response.data.orders);
         setOrder(response.data.orders);
       } catch (err: any) {
-        alert(err.message);
+        console.error("Error fetching orders:", err);
       }
     }
   };
@@ -148,7 +190,7 @@ export const Order = () => {
         >
           <ShoppingCart />
           {cartCount !== 0 && (
-            <div className="w-[20px] h-[20px] absolute z-10 rounded-full bg-red-500 ml-7  mb-8">
+            <div className="w-[20px] h-[20px] absolute z-10 rounded-full bg-red-500 ml-7 mb-8 text-white">
               {cartCount}
             </div>
           )}
@@ -182,6 +224,7 @@ export const Order = () => {
                       image={food.image}
                       quantity={food.qty}
                       _id={food._id}
+                      ingredients={food.ingredients}
                       onRemove={() => {
                         setCart((prev) =>
                           prev.filter((item) => item._id !== food._id)
@@ -192,10 +235,12 @@ export const Order = () => {
                 })}
                 <div className="grid w-full gap-3">
                   <Label htmlFor="message">Delivery address</Label>
-                  <Textarea
-                    placeholder="Please share your complete address"
-                    id="message"
-                  />
+                 <Input
+                  placeholder="Please share your complete address." 
+                  className="h-[80px]" 
+                  value={location} 
+                  onChange={handleLocation}
+                />
                 </div>
               </CardContent>
             </Card>
@@ -206,22 +251,16 @@ export const Order = () => {
               <CardContent className="my-5 w-[439px]">
                 <div className="flex justify-between">
                   <p>Items</p>
-                  {/* {data.reduce(
-                    (total, food) => total + food.price * food.qty,
-                    0
-                  )} */}
+                 {itemsSum}$
                 </div>
                 <div className="flex justify-between mt-2">
                   <p>Shipping</p>
-                  <p>{1000}₮</p>
+                  <p>{shippingCost}$</p>
                 </div>
                 <div className="border-b-gray-500 border-dashed my-5"></div>
                 <div className="flex justify-between">
                   <p>Total</p>
-                  {cart.reduce(
-                    (total, food) => total + food.price * food.qty,
-                    0
-                  )}
+                  { itemsSum + shippingCost}$
                 </div>
               </CardContent>
               <CardFooter className="w-full">
@@ -243,10 +282,12 @@ export const Order = () => {
               <CardContent className="flex flex-col gap-6">
                 {order?.map((food) => (
                   <OrderedFood
+                    key={food._id}
                     foodOrderItems={food.foodOrderItems}
                     createdAt={food.createdAt}
                     orderNo={food._id.slice(0, 5)}
                     status={food.status}
+                    user={food.user}
                   />
                 ))}
               </CardContent>

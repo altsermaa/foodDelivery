@@ -13,7 +13,7 @@ app.use(cors());
 const databaseConnect = async () => {
   try {
     await mongoose.connect(
-      "mongodb+srv://altsermaa:YCQ4jLKHWVnQ2y3z@fooddelivery.dtwtf6a.mongodb.net/FoodDelivery"
+      "mongodb+srv://altsermaa:jVpSAMyAqSH82mV8@fooddelivery.dtwtf6a.mongodb.net/FoodDelivery"
     );
   } catch (error) {
     console.log(error);
@@ -27,6 +27,8 @@ app.use(FoodRouter);
 app.use(OrderRouter);
 app.use(AdminRouter);
 
-app.listen(8000, () => {
-  console.log("running on https://fooddelivery-q3yg.onrender.com");
+const PORT = process.env.PORT || 8000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

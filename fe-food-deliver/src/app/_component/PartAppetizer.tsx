@@ -16,6 +16,11 @@ type PropsType = {
 export const PartAppetizer = ({ foods }: PropsType) => {
   const keys = Object.keys(foods);
 
+    const USDollar = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  });
+
   return (
     <div>
       <div className="flex flex-col gap-20">
