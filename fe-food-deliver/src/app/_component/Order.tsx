@@ -188,7 +188,6 @@ export const Order = () => {
             },
           }
         );
-        console.log(response.data.orders);
         setOrder(response.data.orders);
       } catch (err: any) {
         console.error("Error fetching orders:", err);

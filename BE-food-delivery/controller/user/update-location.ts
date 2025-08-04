@@ -3,16 +3,18 @@ import { UserModel } from "../../model/user.model";
 
 export const updateLocation = async (request: Request, response: Response) => {
   const { id, address } = request.body;
+  console.log("Incoming request data:", { id, address });
 
   const isUserExisted = await UserModel.findOne({ _id: id });
 
   try{
     if (isUserExisted) {
-    await UserModel.findByIdAndUpdate(
+    const updatedUser = await UserModel.findByIdAndUpdate(
       id,
       {$set: { address: address, updatedAt: new Date() }},
       { new: true }  
     );
+    console.log("Updated user:", updatedUser);
     response.send({ message: "Successfully updated user address" });
     return;
   } else {

@@ -4,6 +4,7 @@ import { ChevronLeftIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { InputPropsType } from "../page";
+import Link from "next/link";
 
 export const Step1 = ({
   errors,
@@ -54,9 +55,12 @@ export const Step1 = ({
         </form>
         <div className="flex items-center">
           <p>Already have an account?</p>
-          <Button className="text-blue-500" variant="link">
-            Log in
-          </Button>
+          <Link href="/login">
+            <Button className="text-blue-500" variant="link">
+              Log in
+            </Button>
+          </Link>
+
         </div>
       </div>
     </div>
