@@ -6,7 +6,7 @@ import { Dispatch, SetStateAction } from "react";
 import { ShowSingleFood } from "./ShowSingleFood";
 import { PropsType } from "../page";
 
-export const ShowFoods = ({ foods, setFoods }: PropsType) => {
+export const ShowFoods = ({ foods, setFoods, categories }: PropsType & { categories: any[] }) => {
   const keys = Object.keys(foods);
 
   return (
@@ -17,11 +17,12 @@ export const ShowFoods = ({ foods, setFoods }: PropsType) => {
             <h2 className="mb-14 text-3xl text-black font-black">
               {el} ({foods[el].length})
             </h2>
-            <div className="grid grid-cols-5 items-center gap-6">
+            <div className="grid grid-cols-4 items-center gap-6">
               <AddNewDish
                 categoryId={foods[el][0].categoryId}
                 categoryName={el}
                 setFoods={setFoods}
+                categories={categories}
               />
 
               {foods[el].map((food) => (
@@ -31,6 +32,8 @@ export const ShowFoods = ({ foods, setFoods }: PropsType) => {
                   price={food.price}
                   image={food.image}
                   _id={food._id}
+                  ingredients={food.ingredients}
+                  categories={categories}
                 />
               ))}
             </div>

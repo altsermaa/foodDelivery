@@ -24,7 +24,6 @@ const Users = new Schema({
     required: false,
     default: "USER",
   },
-  // orderedFoods: [{ type: Schema.ObjectId, required: true, ref: "Foods" }],
   isVerified: { type: Boolean, required: false },
   createdAt: { type: Date, default: Date.now, immutable: true },
   updatedAt: { type: Date, default: Date.now },

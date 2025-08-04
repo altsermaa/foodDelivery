@@ -29,6 +29,7 @@ export type UnitDataType = {
   price: number;
   image: string;
   _id: string;
+  ingredients: string;
 };
 
 export const ShowSingleFood = ({
@@ -36,7 +37,9 @@ export const ShowSingleFood = ({
   price,
   image,
   _id,
-}: UnitDataType) => {
+  ingredients,
+  categories,
+}: UnitDataType & { categories: any[] }) => {
 
   return (
     <Card className="h-[342px] w-full p-4 gap-5">
@@ -46,7 +49,7 @@ export const ShowSingleFood = ({
           size="icon"
           className="absolute bottom-5 right-5 rounded-full bg-white text-[#FD543F]"
         >
-          <UpdateFood foodItemId={_id} />
+          <UpdateFood foodItemId={_id} categories={categories} />
         </Button>
       </CardDescription>
       <CardContent className="flex flex-col gap-2">

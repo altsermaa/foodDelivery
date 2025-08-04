@@ -26,7 +26,7 @@ export default function RootLayout({
         </div>
         <div className="flex flex-col gap-6 mx-auto">
           <Link href="/admin/menu">
-            <Button> Food Menu</Button>
+            <Button variant="ghost"> Food Menu</Button>
           </Link>
           <Link href="/admin/orders">
             <Button variant="ghost"> Orders</Button>

@@ -21,7 +21,6 @@ export type PropsType = {
 const MenuPage = () => {
   const [categories, setCategories] = useState([]);
   const [foods, setFoods] = useState<Record<string, FoodProps[]>>({});
-  console.log(foods, "asd");
 
   useEffect(() => {
     const getCategories = async () => {
@@ -58,9 +57,9 @@ const MenuPage = () => {
   console.log(foods);
 
   return (
-    <div>
+    <div className="container mx-auto py-10">
       <ShowCategories categories={categories} />
-      <ShowFoods foods={foods} setFoods={setFoods} />
+      <ShowFoods foods={foods} setFoods={setFoods} categories={categories} />
     </div>
   );
 };

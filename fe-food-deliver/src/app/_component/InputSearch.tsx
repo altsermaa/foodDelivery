@@ -29,7 +29,7 @@ export const InputSearch = () => {
       } catch (error) {
         console.error("Error parsing saved location:", error);
       }
-    }
+    } 
   }, []);
 
   const handleLocation = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,10 +42,7 @@ export const InputSearch = () => {
 
     if (existingData) {
       localStorage.setItem(storageKey, JSON.stringify(location));
-    } else {
-      localStorage.setItem(storageKey, JSON.stringify(location));
     }
-    
     setSavedLocation(location);
     setLocation("");
   };
@@ -57,9 +54,9 @@ export const InputSearch = () => {
           <MapPinPlusInside className="text-red-500 w-[20px]" />
           <p className="text-red-500">Delivery address:</p>
           {savedLocation ? (
-            <p className="text/text-muted-foreground">{savedLocation}</p>
+            <p className="text-muted-foreground truncate max-w-[120px]">{savedLocation}</p>
           ) : (
-            <p className="text/text-muted-foreground">Add location</p>
+            <p className="text-muted-foreground">Add location</p>
           )}
           <ChevronRight className="w-[20px]" />
         </div>

@@ -97,7 +97,7 @@ const AdminHomePage = () => {
   };
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-15">
       <div className="flex justify-between">
         <h1 className="text-2xl font-black mb-5">Orders</h1>
         <StateChanger

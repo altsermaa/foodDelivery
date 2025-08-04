@@ -22,18 +22,17 @@ export type NewDish = {
   categoryId: string;
 };
 
-export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
+export const UpdateFood = ({ foodItemId, categories }: { foodItemId: string; categories: any[] }) => {
   const [singleFood, setSingleFood] = useState<FoodProps>();
-  console.log(singleFood?.foodName);
 
   const [foodName, setFoodName] = useState("");
   const handleFoodName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFoodName(event.target.value);
   };
 
-  const [category, setCategory] = useState("");
-  const handleCategory = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFoodName(event.target.value);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategory(event.target.value);
   };
 
   const [price, setPrice] = useState<number | undefined>(undefined);
@@ -64,7 +63,7 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
      
       setSingleFood(response.data.result);
       setFoodName(response.data.result.foodName)
-      setCategory(response.data.result.categoryName)
+      setSelectedCategory(response.data.result.categoryId)
       setPrice(response.data.result.price); 
       setIngredients(response.data.result.ingredients);
     };
@@ -83,6 +82,7 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
           image:
             "https://res.cloudinary.com/dz8b3asdf/image/upload/v1750038968/cld-sample-4.jpg",
           ingredients: ingredients,
+          categoryId: selectedCategory,
         },
         {
           headers: {
@@ -102,8 +102,8 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
         {
           data: {_id:foodItemId}
         }, 
-
       )
+      alert("Dish has been deleted");
     }catch(err:any) {
       alert(err.response.data.message);
     }
@@ -135,12 +135,20 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
             </div>
             <div className="flex gap-3">
               <Label htmlFor="category">Dish category</Label>
-              <Input
+              <select
                 id="category"
                 name="category"
-                value={category}
-                onChange={handleCategory}
-              />
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="">Select a category</option>
+                {categories.map((category) => (
+                  <option key={category._id} value={category._id}>
+                    {category.categoryName}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex gap-3">
               <Label htmlFor="ingredients">Ingredients</Label>
@@ -171,7 +179,14 @@ export const UpdateFood = ({ foodItemId }: { foodItemId: string }) => {
             </div>
           </div>
           <DialogFooter className="flex justify-between">
-            <Trash className="text-red-600" onClick={deleteDish}/>
+            <Button 
+              variant="destructive" 
+              size="icon" 
+              onClick={deleteDish}
+              className="flex items-center justify-center"
+            >
+              <Trash className="h-4 w-4" />
+            </Button>
             <Button type="submit" onClick={updateDish}>
               Save changes
             </Button>

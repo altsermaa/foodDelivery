@@ -15,13 +15,6 @@ import { ImageUpload } from "./ImageUpload";
 import { Dispatch, SetStateAction, useState } from "react";
 import { FoodProps } from "../page";
 
-// export type NewDish = {
-//   foodName: string;
-//   price: number | undefined;
-//   ingredients: string;
-//   image: string;
-//   categoryId: string;
-// };
 export type AddNewType = {
   imageUrl: string | null;
   setImageUrl: Dispatch<SetStateAction<string | null>>;
@@ -32,14 +25,21 @@ export const AddNewDish = ({
   categoryId,
   setFoods,
   categoryName,
+  categories,
 }: {
   categoryId: string;
   setFoods: Dispatch<SetStateAction<Record<string, FoodProps[]>>>;
   categoryName: string;
+  categories: any[];
 }) => {
   const [foodName, setFoodName] = useState("");
   const handleFoodName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFoodName(event.target.value);
+  };
+
+  const [selectedCategory, setSelectedCategory] = useState(categoryId);
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
   };
 
   const [price, setPrice] = useState<number | undefined>(undefined);
@@ -62,6 +62,11 @@ export const AddNewDish = ({
         return null;
       }
 
+      if (!selectedCategory) {
+        alert("Please select a category");
+        return null;
+      }
+
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", "fooddelivery");
@@ -79,23 +84,10 @@ export const AddNewDish = ({
         price: price,
         image: img.secure_url,
         ingredients: ingredients,
-        categoryId: categoryId,
+        categoryId: selectedCategory,
       });
 
-      // setFoods((prev) => ({
-      //   ...prev,
-      //   [categoryName]: [
-      //     prev[categoryName],
-      //     {
-      //       _id: "123",
-      //       foodName: foodName,
-      //       price: price,
-      //       image: img.secure_url,
-      //       ingredients: ingredients,
-      //       categoryId: categoryId,
-      //     },
-      //   ],
-      // }));
+      alert("Dish added successfully!");
     } catch (err: any) {
       alert(err.response.data.message);
     }
@@ -137,6 +129,23 @@ export const AddNewDish = ({
             </div>
           </div>
           <div className="grid gap-4">
+            <div className="grid gap-3">
+              <Label htmlFor="category">Category</Label>
+              <select
+                id="category"
+                name="category"
+                value={selectedCategory}
+                onChange={(e) => handleCategoryChange(e.target.value)}
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 sm:text-sm"
+              >
+                <option value="">Select a category</option>
+                {categories.map((category) => (
+                  <option key={category._id} value={category._id}>
+                    {category.categoryName}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="grid gap-3">
               <Label htmlFor="ingredients">Ingredients</Label>
               <Input

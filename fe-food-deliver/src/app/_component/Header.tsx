@@ -1,23 +1,13 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, UserRound } from "lucide-react";
+import { UserRound } from "lucide-react";
 import Image from "next/image";
 import { InputSearch } from "./InputSearch";
-import { Email } from "./Email";
 import { useAuth } from "./UserProvider";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { useState, useEffect, useRef } from "react";
 import { Order } from "./Order";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export const Header = () => {
   const { user, signOut } = useAuth();
@@ -46,10 +36,16 @@ export const Header = () => {
     };
   }, []);
 
+  const pathname = usePathname();
+
+  const paths = ["/login", "/signUp", "/admin/menu", "/admin/orders"]
+
+
 
   return (
     <div>
-      {
+      { paths.includes(pathname) ? null : (
+
         <div className="w-screen h-[68px] py-3 px-24 bg-[#18181B] flex justify-between relative">
           <div className="flex gap-3">
             <Image src="/logoHat.png" width={46} height={37} alt="logo" />
@@ -81,7 +77,7 @@ export const Header = () => {
               ) : (
                 <>
                   <div className="w-[188px] h-fit bg-white rounded-xl p-4 gap-2 text-center">
-                    <p className="font-black">{user.email}</p>
+                    <p className="font-black">Hi, {user.email}</p>
                   </div>
                   <Button variant="secondary" className="w-full" onClick={handleSignOut}>
                     Sign out
@@ -92,6 +88,8 @@ export const Header = () => {
           )}
 
         </div>
+      ) 
+        
       }
     </div>
   );

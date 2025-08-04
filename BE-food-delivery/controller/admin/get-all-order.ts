@@ -12,7 +12,7 @@ export const getAllOrder = async (request: Request, response: Response) => {
     }).populate({
       path: "user",
       model: "Users",
-      select: "address"
+      select: "address email"
     })
     response.status(200).send({ message: "All orders in database", allOrders });
   } catch (err) {

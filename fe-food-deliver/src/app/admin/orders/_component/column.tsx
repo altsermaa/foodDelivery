@@ -2,6 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 
 export type Payment = {
   id: string;
@@ -10,8 +11,37 @@ export type Payment = {
   food: string;
   date: string;
   total: number;
-  status: "pending" | "delivered" | "cancelled";
+  status: "PENDING" | "DELIVERED" | "CANCELLED";
   address: string;
+};
+
+const getStatusBadge = (status: string) => {
+  switch (status) {
+    case "PENDING":
+      return (
+        <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">
+          PENDING
+        </Badge>
+      );
+    case "DELIVERED":
+      return (
+        <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
+          DELIVERED
+        </Badge>
+      );
+    case "CANCELLED":
+      return (
+        <Badge variant="secondary" className="bg-red-100 text-red-800 border-red-200">
+          CANCELLED
+        </Badge>
+      );
+    default:
+      return (
+        <Badge variant="secondary">
+          {status}
+        </Badge>
+      );
+  }
 };
 
 export const customColums = (selectHandler: any): ColumnDef<Payment>[] => {
@@ -66,8 +96,8 @@ export const customColums = (selectHandler: any): ColumnDef<Payment>[] => {
     {
       accessorKey: "status",
       header: "Delivery state",
+      cell: ({ row }) => getStatusBadge(row.original.status),
     },
-
     {
       accessorKey: "address",
       header: "Delivery address",

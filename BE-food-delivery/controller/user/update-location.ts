@@ -2,13 +2,17 @@ import { Request, Response } from "express";
 import { UserModel } from "../../model/user.model";
 
 export const updateLocation = async (request: Request, response: Response) => {
-  const { id, location } = request.body;
+  const { id, address } = request.body;
 
   const isUserExisted = await UserModel.findOne({ _id: id });
 
   try{
     if (isUserExisted) {
-    await UserModel.findByIdAndUpdate({ _id: id }, {address: location});
+    await UserModel.findByIdAndUpdate(
+      id,
+      {$set: { address: address, updatedAt: new Date() }},
+      { new: true }  
+    );
     response.send({ message: "Successfully updated user address" });
     return;
   } else {
